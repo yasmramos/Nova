@@ -1,6 +1,7 @@
 /**
  * @file CodegenVisitor.h
  * @brief Visitor para generación de código LLVM IR
+ * @author Yasmany Ramos García
  * 
  * Este visitor recorre el AST de Nova y genera instrucciones
  * LLVM IR equivalentes. Implementa la interfaz NodeVisitor.

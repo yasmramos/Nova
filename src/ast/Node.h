@@ -1,6 +1,7 @@
 /**
  * @file Node.h
  * @brief Clase base para todos los nodos del AST (Abstract Syntax Tree)
+ * @author Yasmany Ramos García
  * 
  * Define la estructura fundamental que comparten todos los nodos
  * del árbol de sintaxis abstracta del lenguaje Nova.

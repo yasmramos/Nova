@@ -1,6 +1,7 @@
 /**
  * @file ASTBuilder.h
  * @brief Constructor del AST (Abstract Syntax Tree)
+ * @author Yasmany Ramos García
  * 
  * Convierte el CST (Concrete Syntax Tree) generado por ANTLR4
  * en nuestro AST personalizado y limpio.

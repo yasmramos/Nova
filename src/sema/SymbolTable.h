@@ -1,6 +1,7 @@
 /**
  * @file SymbolTable.h
  * @brief Tabla de símbolos para resolución de nombres
+ * @author Yasmany Ramos García
  * 
  * Implementa el sistema de ámbitos (scopes) y mantiene un registro
  * de todos los identificadores declarados con su información asociada.

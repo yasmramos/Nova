@@ -1,6 +1,7 @@
 /**
  * @file SourceLocation.cpp
  * @brief Implementación de SourceLocation y SourceRange
+ * @author Yasmany Ramos García
  */
 
 #include "SourceLocation.h"

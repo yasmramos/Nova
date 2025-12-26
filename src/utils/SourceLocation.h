@@ -1,6 +1,7 @@
 /**
  * @file SourceLocation.h
  * @brief Representación de ubicaciones en el código fuente
+ * @author Yasmany Ramos García
  * 
  * Utilizado para reportar errores precisos con información
  * de línea, columna y archivo.

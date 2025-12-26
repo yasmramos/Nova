@@ -1,6 +1,7 @@
 /**
  * @file Error.cpp
  * @brief Implementación del sistema de manejo de errores
+ * @author Yasmany Ramos García
  */
 
 #include "Error.h"

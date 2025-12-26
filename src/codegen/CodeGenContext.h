@@ -1,6 +1,7 @@
 /**
  * @file CodeGenContext.h
  * @brief Contexto global para la generación de código LLVM
+ * @author Yasmany Ramos García
  * 
  * Este archivo define el contexto que mantiene el estado de LLVM
  * durante la generación de código, incluyendo el módulo, builder,

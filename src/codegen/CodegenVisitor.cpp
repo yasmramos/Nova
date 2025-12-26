@@ -1,6 +1,7 @@
 /**
  * @file CodegenVisitor.cpp
  * @brief Implementación del generador de código LLVM IR
+ * @author Yasmany Ramos García
  */
 
 #include "CodegenVisitor.h"

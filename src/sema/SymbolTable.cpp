@@ -1,6 +1,7 @@
 /**
  * @file SymbolTable.cpp
  * @brief Implementación de la tabla de símbolos
+ * @author Yasmany Ramos García
  */
 
 #include "SymbolTable.h"

@@ -1,6 +1,7 @@
 /**
  * @file CodeGenContext.cpp
  * @brief Implementación del contexto de generación de código LLVM
+ * @author Yasmany Ramos García
  */
 
 #include "CodeGenContext.h"

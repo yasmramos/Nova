@@ -1,6 +1,7 @@
 /**
  * @file Types.h
  * @brief Sistema de tipos para el lenguaje Nova
+ * @author Yasmany Ramos García
  * 
  * Define la jerarquía completa de tipos del lenguaje,
  * incluyendo tipos primitivos, compuestos, genéricos y referencias.

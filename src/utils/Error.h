@@ -1,6 +1,7 @@
 /**
  * @file Error.h
  * @brief Sistema de manejo de errores y advertencias
+ * @author Yasmany Ramos García
  * 
  * Proporciona herramientas para reportar errores semánticos,
  * sintácticos y léxicos con información precisa de ubicación.

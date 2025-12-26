@@ -1,6 +1,7 @@
 /**
  * @file main.cpp
  * @brief Punto de entrada del compilador Nova
+ * @author Yasmany Ramos García
  * 
  * El compilador del lenguaje de programación más avanzado del mundo
  */

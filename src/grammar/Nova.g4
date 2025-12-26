@@ -1,5 +1,6 @@
 /**
  * Gramática ANTLR4 para el Lenguaje Nova
+ * @author Yasmany Ramos García
  * 
  * El lenguaje de programación más avanzado del mundo
  * 

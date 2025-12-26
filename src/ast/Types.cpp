@@ -1,6 +1,7 @@
 /**
  * @file Types.cpp
  * @brief Implementación del sistema de tipos
+ * @author Yasmany Ramos García
  */
 
 #include "Types.h"

@@ -1,6 +1,7 @@
 /**
  * @file Node.cpp
  * @brief Implementación de los nodos del AST
+ * @author Yasmany Ramos García
  */
 
 #include "Node.h"

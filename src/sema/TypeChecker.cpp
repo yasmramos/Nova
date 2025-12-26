@@ -1,6 +1,7 @@
 /**
  * @file TypeChecker.cpp
  * @brief Implementación del analizador semántico y verificador de tipos
+ * @author Yasmany Ramos García
  */
 
 #include "TypeChecker.h"

@@ -1,6 +1,7 @@
 /**
  * @file TypeChecker.h
  * @brief Analizador semántico y verificador de tipos
+ * @author Yasmany Ramos García
  * 
  * Este componente es responsable de verificar la corrección semántica
  * del programa, incluyendo la verificación de tipos, resolución de
