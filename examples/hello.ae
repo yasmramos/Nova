@@ -1,0 +1,7 @@
+// examples/hello.ae
+// Programa Hola Mundo en Aether
+
+func main() -> int {
+    print("¡Hola, Mundo desde Aether!");
+    return 0;
+}

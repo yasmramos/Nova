@@ -1,0 +1,50 @@
+// examples/fibonacci.ae
+// Fibonacci iterativo y recursivo
+
+// Fibonacci recursivo simple
+func fibRecursive(n: i32) -> i32 {
+    if n <= 1 {
+        return n;
+    }
+    return fibRecursive(n - 1) + fibRecursive(n - 2);
+}
+
+// Fibonacci iterativo (más eficiente)
+func fibIterative(n: i32) -> i32 {
+    if n <= 1 {
+        return n;
+    }
+    
+    let a: i32 = 0;
+    let b: i32 = 1;
+    let temp: i32 = 0;
+    let i: i32 = 2;
+    
+    while i <= n {
+        temp = a + b;
+        a = b;
+        b = temp;
+        i = i + 1;
+    }
+    
+    return b;
+}
+
+func main() -> i32 {
+    let n: i32 = 10;
+    
+    // Fibonacci recursivo
+    print("Fibonacci recursivo (n=" + n + "): " + fibRecursive(n));
+    
+    // Fibonacci iterativo
+    print("Fibonacci iterativo (n=" + n + "): " + fibIterative(n));
+    
+    // Calcular varios términos
+    let i: i32 = 0;
+    while i <= n {
+        print("fib(" + i + ") = " + fibIterative(i));
+        i = i + 1;
+    }
+    
+    return 0;
+}

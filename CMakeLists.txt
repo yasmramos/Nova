@@ -149,6 +149,12 @@ set(AETHER_SEMA_SOURCES
     ${CMAKE_SOURCE_DIR}/src/sema/TypeChecker.cpp
 )
 
+# Fuentes del generador de código LLVM
+set(AETHER_CODEGEN_SOURCES
+    ${CMAKE_SOURCE_DIR}/src/codegen/CodeGenContext.cpp
+    ${CMAKE_SOURCE_DIR}/src/codegen/CodegenVisitor.cpp
+)
+
 # Fuentes del driver
 set(AETHER_DRIVER_SOURCES
     ${CMAKE_SOURCE_DIR}/src/driver/main.cpp
@@ -164,6 +170,7 @@ set(AETHER_UTILS_SOURCES
 add_library(aether-lib STATIC
     ${AETHER_AST_SOURCES}
     ${AETHER_SEMA_SOURCES}
+    ${AETHER_CODEGEN_SOURCES}
     ${AETHER_UTILS_SOURCES}
     ${aether_parser_SOURCES}
 )
@@ -268,4 +275,5 @@ message(STATUS "C++ Standard:        20")
 message(STATUS "Build Type:          ${CMAKE_BUILD_TYPE}")
 message(STATUS "AST Sources:         ${AETHER_AST_SOURCES}")
 message(STATUS "SEMA Sources:        ${AETHER_SEMA_SOURCES}")
+message(STATUS "CodeGen Sources:     ${AETHER_CODEGEN_SOURCES}")
 message(STATUS "==================================")

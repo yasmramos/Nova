@@ -1,0 +1,39 @@
+// examples/math.ae
+// Programa de ejemplo con operaciones matemáticas
+
+// Función de suma
+func add(a: i32, b: i32) -> i32 {
+    return a + b;
+}
+
+// Función de factorial recursiva
+func factorial(n: i32) -> i32 {
+    if n < 2 {
+        return 1;
+    }
+    return n * factorial(n - 1);
+}
+
+// Función principal
+func main() -> i32 {
+    let x: i32 = 10;
+    let y: i32 = 5;
+    let result: i32;
+    
+    // Operaciones básicas
+    result = add(x, y);
+    print("10 + 5 = " + result);
+    
+    // Factorial
+    let fact: i32 = factorial(5);
+    print("5! = " + fact);
+    
+    // Condicional
+    if x > y {
+        print("x es mayor que y");
+    } else {
+        print("x no es mayor que y");
+    }
+    
+    return 0;
+}

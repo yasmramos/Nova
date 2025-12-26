@@ -1,0 +1,63 @@
+// examples/types.ae
+// Ejemplo del sistema de tipos avanzado de Aether
+
+// Algebraic Data Types
+type Shape = 
+  | Circle(radius: f64)
+  | Rect(width: f64, height: f64)
+  | Triangle(a: f64, b: f64, c: f64);
+
+// Función con pattern matching
+func area(s: Shape) -> f64 {
+    return match s {
+        Circle(r) => 3.14159 * r * r
+        Rect(w, h) => w * h
+        Triangle(a, b, c) => {
+            let s = (a + b + c) / 2.0;
+            sqrt(s * (s - a) * (s - b) * (s - c))
+        }
+    };
+}
+
+// Option type para null safety
+func divide(a: f64, b: f64) -> Option<f64> {
+    if b == 0.0 {
+        return None;
+    }
+    return Some(a / b);
+}
+
+// Struct con métodos
+struct Point {
+    x: f64,
+    y: f64,
+    
+    func distanceTo(other: Point) -> f64 {
+        let dx = other.x - this.x;
+        let dy = other.y - this.y;
+        return sqrt(dx * dx + dy * dy);
+    }
+}
+
+func main() -> i32 {
+    // Usar ADTs
+    let circle = Circle(5.0);
+    let rect = Rect(3.0, 4.0);
+    
+    print("Área del círculo: " + area(circle));
+    print("Área del rectángulo: " + area(rect));
+    
+    // Usar Option
+    let result = divide(10.0, 2.0);
+    match result {
+        Some(v) => print("10 / 2 = " + v)
+        None => print("División por cero")
+    };
+    
+    // Usar struct
+    let p1 = Point(0.0, 0.0);
+    let p2 = Point(3.0, 4.0);
+    print("Distancia: " + p1.distanceTo(p2));
+    
+    return 0;
+}
