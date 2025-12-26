@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(AetherLanguage LANGUAGES CXX VERSION 0.1.0 DESCRIPTION "El lenguaje de programación más avanzado del mundo")
+project(AetherLanguage LANGUAGES CXX VERSION 0.2.0 DESCRIPTION "El lenguaje de programación más avanzado del mundo")
 
 # Estándar C++20
 set(CMAKE_CXX_STANDARD 20)
@@ -136,37 +136,95 @@ add_antlr_target(aether_parser
 # COMPILACIÓN DEL COMPILADOR
 # ============================================
 
-# Recopilar todos los fuentes del compilador
-file(GLOB AETHER_SOURCES
-    "${CMAKE_SOURCE_DIR}/src/ast/*.cpp"
-    "${CMAKE_SOURCE_DIR}/src/sema/*.cpp"
-    "${CMAKE_SOURCE_DIR}/src/codegen/*.cpp"
-    "${CMAKE_SOURCE_DIR}/src/driver/*.cpp"
-    "${CMAKE_SOURCE_DIR}/src/utils/*.cpp"
+# Fuentes del AST
+set(AETHER_AST_SOURCES
+    ${CMAKE_SOURCE_DIR}/src/ast/Node.cpp
+    ${CMAKE_SOURCE_DIR}/src/ast/Types.cpp
 )
 
-# Crear ejecutable del compilador
-add_executable(aether-compiler
-    ${AETHER_SOURCES}
+# Fuentes del analizador semántico
+set(AETHER_SEMA_SOURCES
+    ${CMAKE_SOURCE_DIR}/src/sema/ASTBuilder.cpp
+    ${CMAKE_SOURCE_DIR}/src/sema/SymbolTable.cpp
+    ${CMAKE_SOURCE_DIR}/src/sema/TypeChecker.cpp
+)
+
+# Fuentes del driver
+set(AETHER_DRIVER_SOURCES
+    ${CMAKE_SOURCE_DIR}/src/driver/main.cpp
+)
+
+# Fuentes de utilidades
+set(AETHER_UTILS_SOURCES
+    ${CMAKE_SOURCE_DIR}/src/utils/SourceLocation.cpp
+    ${CMAKE_SOURCE_DIR}/src/utils/Error.cpp
+)
+
+# Crear librería estática del compilador
+add_library(aether-lib STATIC
+    ${AETHER_AST_SOURCES}
+    ${AETHER_SEMA_SOURCES}
+    ${AETHER_UTILS_SOURCES}
     ${aether_parser_SOURCES}
 )
 
-# Linking con LLVM y ANTLR4
-target_link_libraries(aether-compiler
+target_link_libraries(aether-lib
     PRIVATE
         antlr4-runtime
         LLVM
 )
 
-# Características del compilador
+target_compile_features(aether-lib PRIVATE cxx_std_20)
+
+# Crear ejecutable del compilador
+add_executable(aether-compiler
+    ${AETHER_DRIVER_SOURCES}
+)
+
+target_link_libraries(aether-compiler
+    PRIVATE
+        aether-lib
+        antlr4-runtime
+        LLVM
+)
+
 target_compile_features(aether-compiler PRIVATE cxx_std_20)
+
+# ============================================
+# OPCIONES DE COMPILACIÓN
+# ============================================
+
+option(AETHER_ENABLE_ASSERTIONS "Habilitar aserciones en tiempo de ejecución" ON)
+option(AETHER_ENABLE_WARNINGS "Habilitar advertencias del compilador" ON)
+
+if(AETHER_ENABLE_WARNINGS)
+    if(MSVC)
+        target_compile_options(aether-lib PRIVATE /W4)
+        target_compile_options(aether-compiler PRIVATE /W4)
+    else()
+        target_compile_options(aether-lib PRIVATE 
+            -Wall -Wextra -Wpedantic -Werror=return-type
+            -Werror=uninitialized -Werror=maybe-uninitialized
+        )
+        target_compile_options(aether-compiler PRIVATE 
+            -Wall -Wextra -Wpedantic -Werror=return-type
+            -Werror=uninitialized -Werror=maybe-uninitialized
+        )
+    endif()
+endif()
+
+if(NOT AETHER_ENABLE_ASSERTIONS)
+    target_compile_definitions(aether-lib PRIVATE NDEBUG)
+    target_compile_definitions(aether-compiler PRIVATE NDEBUG)
+endif()
 
 # ============================================
 # INSTALACIÓN
 # ============================================
 
-install(TARGETS aether-compiler
+install(TARGETS aether-compiler aether-lib
     RUNTIME DESTINATION bin
+    ARCHIVE DESTINATION lib
 )
 
 # Exportar para uso externo
@@ -208,4 +266,6 @@ message(STATUS "LLVM Version:        ${LLVM_PACKAGE_VERSION}")
 message(STATUS "ANTLR4 Version:      4.13.1")
 message(STATUS "C++ Standard:        20")
 message(STATUS "Build Type:          ${CMAKE_BUILD_TYPE}")
+message(STATUS "AST Sources:         ${AETHER_AST_SOURCES}")
+message(STATUS "SEMA Sources:        ${AETHER_SEMA_SOURCES}")
 message(STATUS "==================================")
