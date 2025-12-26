@@ -1,0 +1,88 @@
+# === Aether Compiler .gitignore ===
+
+# === Build Directories ===
+build/
+cmake-build-*/
+out/
+
+# === CMake ===
+CMakeLists.txt.user
+CMakeCache.txt
+CMakeFiles/
+CMakeScripts/
+Testing/
+Makefile
+cmake_install.cmake
+CTestTestfile.cmake
+*.cmake
+!cmake/**/*
+
+# === Compilador y Archivos Generados ===
+*.o
+*.obj
+*.exe
+*.dll
+*.so
+*.dylib
+*.a
+*.lib
+*.dylib
+
+# === LLVM ===
+*.bc
+*.ll
+*.s
+
+# === ANTLR4 Generados ===
+src/parser/*Lexer.cpp
+src/parser/*Lexer.h
+src/parser/*Parser.cpp
+src/parser/*Parser.h
+src/parser/*Listener.cpp
+src/parser/*Listener.h
+src/parser/*BaseListener.cpp
+src/parser/*BaseListener.h
+src/parser/*Visitor.cpp
+src/parser/*Visitor.h
+src/parser/*BaseVisitor.cpp
+src/parser/*BaseVisitor.h
+
+# === Visual Studio ===
+.vs/
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.sln
+*.suo
+
+# === IDEs ===
+.idea/
+*.swp
+*.swo
+*~
+.vscode/
+*.code-workspace
+
+# === Documentation ===
+docs/html/
+docs/latex/
+
+# === Testing ===
+*.test
+*.out
+
+# === OS Specific ===
+.DS_Store
+Thumbs.db
+
+# === Temporary Files ===
+*.tmp
+*.bak
+*.log
+*.tmp.*
+
+# === Executable ===
+aether-compiler
+
+# === Compile Commands ===
+compile_commands.json
