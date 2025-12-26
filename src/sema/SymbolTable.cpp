@@ -6,7 +6,7 @@
 #include "SymbolTable.h"
 #include <sstream>
 
-namespace aether {
+namespace nova {
 
 // ============================================
 // SYMBOL
@@ -387,4 +387,4 @@ std::string storageClassToString(StorageClass storage) {
     }
 }
 
-} // namespace aether
+} // namespace nova

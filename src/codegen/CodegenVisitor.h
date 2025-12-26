@@ -2,12 +2,12 @@
  * @file CodegenVisitor.h
  * @brief Visitor para generación de código LLVM IR
  * 
- * Este visitor recorre el AST de Aether y genera instrucciones
+ * Este visitor recorre el AST de Nova y genera instrucciones
  * LLVM IR equivalentes. Implementa la interfaz NodeVisitor.
  */
 
-#ifndef AETHER_CODEGEN_VISITOR_H
-#define AETHER_CODEGEN_VISITOR_H
+#ifndef NOVA_CODEGEN_VISITOR_H
+#define NOVA_CODEGEN_VISITOR_H
 
 #include <memory>
 #include <string>
@@ -17,11 +17,11 @@
 #include "Node.h"
 #include "CodeGenContext.h"
 
-namespace aether {
+namespace nova {
 
 /**
  * @class CodegenVisitor
- * @brief Genera código LLVM IR desde el AST de Aether
+ * @brief Genera código LLVM IR desde el AST de Nova
  * 
  * Este visitor transforma cada nodo del AST en las instrucciones
  * LLVM correspondientes, utilizando el CodeGenContext para
@@ -179,17 +179,17 @@ private:
 };
 
 /**
- * @class AetherJIT
+ * @class NovaJIT
  * @brief Utilidad para ejecución JIT del código generado
  * 
- * Permite compilar y ejecutar código Aether directamente
+ * Permite compilar y ejecutar código Nova directamente
  * usando LLVM ORC JIT.
  */
 #if LLVM_VERSION_MAJOR >= 14
-class AetherJIT {
+class NovaJIT {
 public:
-    AetherJIT();
-    ~AetherJIT();
+    NovaJIT();
+    ~NovaJIT();
     
     /**
      * @brief Añade un módulo al JIT
@@ -214,6 +214,6 @@ private:
 };
 #endif
 
-} // namespace aether
+} // namespace nova
 
-#endif // AETHER_CODEGEN_VISITOR_H
+#endif // NOVA_CODEGEN_VISITOR_H

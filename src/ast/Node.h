@@ -3,11 +3,11 @@
  * @brief Clase base para todos los nodos del AST (Abstract Syntax Tree)
  * 
  * Define la estructura fundamental que comparten todos los nodos
- * del árbol de sintaxis abstracta del lenguaje Aether.
+ * del árbol de sintaxis abstracta del lenguaje Nova.
  */
 
-#ifndef AETHER_NODE_H
-#define AETHER_NODE_H
+#ifndef NOVA_NODE_H
+#define NOVA_NODE_H
 
 #include <string>
 #include <vector>
@@ -16,7 +16,7 @@
 #include "SourceLocation.h"
 #include "Types.h"
 
-namespace aether {
+namespace nova {
 
 /**
  * @enum NodeKind
@@ -684,6 +684,6 @@ using ExprPtr = std::unique_ptr<Expression>;
 using StmtPtr = std::unique_ptr<Statement>;
 using DeclPtr = std::unique_ptr<Declaration>;
 
-} // namespace aether
+} // namespace nova
 
-#endif // AETHER_NODE_H
+#endif // NOVA_NODE_H

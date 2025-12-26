@@ -1,6 +1,6 @@
 /**
  * @file main.cpp
- * @brief Punto de entrada del compilador Aether
+ * @brief Punto de entrada del compilador Nova
  * 
  * El compilador del lenguaje de programación más avanzado del mundo
  */
@@ -35,7 +35,7 @@ void printBanner() {
 
 void printHelp() {
     std::cout << R"(
-USO: aether-compiler [OPCIONES] ARCHIVOS...
+USO: nova-compiler [OPCIONES] ARCHIVOS...
 
 OPCIONES:
     -h, --help              Muestra esta ayuda
@@ -50,9 +50,9 @@ OPCIONES:
     --target <triplet>      Arquitectura objetivo (x86_64, arm64, etc.)
 
 EJEMPLOS:
-    aether-compiler programa.aether
-    aether-compiler -O2 -o programa programa.aether
-    aether-compiler --emit-llvm programa.aether
+    nova-compiler programa.nova
+    nova-compiler -O2 -o programa programa.nova
+    nova-compiler --emit-llvm programa.nova
     )" << std::endl;
 }
 
@@ -60,7 +60,7 @@ int main(int argc, char* argv[]) {
     printBanner();
     
     // Configuración de opciones de línea de comandos
-    cxxopts::Options options("aether-compiler", "Compilador del lenguaje Aether");
+    cxxopts::Options options("nova-compiler", "Compilador del lenguaje Nova");
     
     options.add_options()
         ("h,help", "Muestra ayuda", cxxopts::value<bool>())
@@ -78,7 +78,7 @@ int main(int argc, char* argv[]) {
     
     // Positional arguments para archivos de entrada
     options.add_options("Positional")
-        ("input", "Archivos .aether a compilar", cxxopts::value<std::vector<std::string>>())
+        ("input", "Archivos .nova a compilar", cxxopts::value<std::vector<std::string>>())
     ;
     
     options.parse_positional({"input"});
@@ -92,7 +92,7 @@ int main(int argc, char* argv[]) {
     }
     
     if (result.count("version")) {
-        std::cout << "Aether Compiler v0.1.0" << std::endl;
+        std::cout << "Nova Compiler v0.1.0" << std::endl;
         std::cout << "LLVM Version: " << LLVM_PACKAGE_VERSION << std::endl;
         std::cout << "ANTLR4 Version: 4.13.1" << std::endl;
         return 0;

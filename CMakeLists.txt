@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(AetherLanguage LANGUAGES CXX VERSION 0.2.0 DESCRIPTION "El lenguaje de programación más avanzado del mundo")
+project(NovaLanguage LANGUAGES CXX VERSION 0.2.0 DESCRIPTION "El lenguaje de programación más avanzado del mundo")
 
 # Estándar C++20
 set(CMAKE_CXX_STANDARD 20)
@@ -80,7 +80,7 @@ include_directories(
 )
 
 # Archivos de gramática ANTLR4
-file(GLOB AETHER_GRAMMAR_FILES "${CMAKE_SOURCE_DIR}/src/grammar/*.g4")
+file(GLOB NOVA_GRAMMAR_FILES "${CMAKE_SOURCE_DIR}/src/grammar/*.g4")
 
 # ============================================
 # GENERACIÓN AUTOMÁTICA DE LEXER/PARSER
@@ -116,7 +116,7 @@ function(add_antlr_target target_name grammar_file output_dir)
                 -visitor
                 -listener
                 -o ${output_dir}
-                -package aether
+                -package nova
                 ${grammar_file}
         DEPENDS ${grammar_file}
         COMMENT "Generando parser ANTLR4 para ${grammar_name}"
@@ -127,8 +127,8 @@ function(add_antlr_target target_name grammar_file output_dir)
 endfunction()
 
 # Generar parser para la gramática principal
-add_antlr_target(aether_parser 
-    ${CMAKE_SOURCE_DIR}/src/grammar/Aether.g4 
+add_antlr_target(nova_parser 
+    ${CMAKE_SOURCE_DIR}/src/grammar/Nova.g4 
     ${CMAKE_SOURCE_DIR}/src/parser
 )
 
@@ -137,108 +137,108 @@ add_antlr_target(aether_parser
 # ============================================
 
 # Fuentes del AST
-set(AETHER_AST_SOURCES
+set(NOVA_AST_SOURCES
     ${CMAKE_SOURCE_DIR}/src/ast/Node.cpp
     ${CMAKE_SOURCE_DIR}/src/ast/Types.cpp
 )
 
 # Fuentes del analizador semántico
-set(AETHER_SEMA_SOURCES
+set(NOVA_SEMA_SOURCES
     ${CMAKE_SOURCE_DIR}/src/sema/ASTBuilder.cpp
     ${CMAKE_SOURCE_DIR}/src/sema/SymbolTable.cpp
     ${CMAKE_SOURCE_DIR}/src/sema/TypeChecker.cpp
 )
 
 # Fuentes del generador de código LLVM
-set(AETHER_CODEGEN_SOURCES
+set(NOVA_CODEGEN_SOURCES
     ${CMAKE_SOURCE_DIR}/src/codegen/CodeGenContext.cpp
     ${CMAKE_SOURCE_DIR}/src/codegen/CodegenVisitor.cpp
 )
 
 # Fuentes del driver
-set(AETHER_DRIVER_SOURCES
+set(NOVA_DRIVER_SOURCES
     ${CMAKE_SOURCE_DIR}/src/driver/main.cpp
 )
 
 # Fuentes de utilidades
-set(AETHER_UTILS_SOURCES
+set(NOVA_UTILS_SOURCES
     ${CMAKE_SOURCE_DIR}/src/utils/SourceLocation.cpp
     ${CMAKE_SOURCE_DIR}/src/utils/Error.cpp
 )
 
 # Crear librería estática del compilador
-add_library(aether-lib STATIC
-    ${AETHER_AST_SOURCES}
-    ${AETHER_SEMA_SOURCES}
-    ${AETHER_CODEGEN_SOURCES}
-    ${AETHER_UTILS_SOURCES}
-    ${aether_parser_SOURCES}
+add_library(nova-lib STATIC
+    ${NOVA_AST_SOURCES}
+    ${NOVA_SEMA_SOURCES}
+    ${NOVA_CODEGEN_SOURCES}
+    ${NOVA_UTILS_SOURCES}
+    ${nova_parser_SOURCES}
 )
 
-target_link_libraries(aether-lib
+target_link_libraries(nova-lib
     PRIVATE
         antlr4-runtime
         LLVM
 )
 
-target_compile_features(aether-lib PRIVATE cxx_std_20)
+target_compile_features(nova-lib PRIVATE cxx_std_20)
 
 # Crear ejecutable del compilador
-add_executable(aether-compiler
-    ${AETHER_DRIVER_SOURCES}
+add_executable(nova-compiler
+    ${NOVA_DRIVER_SOURCES}
 )
 
-target_link_libraries(aether-compiler
+target_link_libraries(nova-compiler
     PRIVATE
-        aether-lib
+        nova-lib
         antlr4-runtime
         LLVM
 )
 
-target_compile_features(aether-compiler PRIVATE cxx_std_20)
+target_compile_features(nova-compiler PRIVATE cxx_std_20)
 
 # ============================================
 # OPCIONES DE COMPILACIÓN
 # ============================================
 
-option(AETHER_ENABLE_ASSERTIONS "Habilitar aserciones en tiempo de ejecución" ON)
-option(AETHER_ENABLE_WARNINGS "Habilitar advertencias del compilador" ON)
+option(NOVA_ENABLE_ASSERTIONS "Habilitar aserciones en tiempo de ejecución" ON)
+option(NOVA_ENABLE_WARNINGS "Habilitar advertencias del compilador" ON)
 
-if(AETHER_ENABLE_WARNINGS)
+if(NOVA_ENABLE_WARNINGS)
     if(MSVC)
-        target_compile_options(aether-lib PRIVATE /W4)
-        target_compile_options(aether-compiler PRIVATE /W4)
+        target_compile_options(nova-lib PRIVATE /W4)
+        target_compile_options(nova-compiler PRIVATE /W4)
     else()
-        target_compile_options(aether-lib PRIVATE 
+        target_compile_options(nova-lib PRIVATE 
             -Wall -Wextra -Wpedantic -Werror=return-type
             -Werror=uninitialized -Werror=maybe-uninitialized
         )
-        target_compile_options(aether-compiler PRIVATE 
+        target_compile_options(nova-compiler PRIVATE 
             -Wall -Wextra -Wpedantic -Werror=return-type
             -Werror=uninitialized -Werror=maybe-uninitialized
         )
     endif()
 endif()
 
-if(NOT AETHER_ENABLE_ASSERTIONS)
-    target_compile_definitions(aether-lib PRIVATE NDEBUG)
-    target_compile_definitions(aether-compiler PRIVATE NDEBUG)
+if(NOT NOVA_ENABLE_ASSERTIONS)
+    target_compile_definitions(nova-lib PRIVATE NDEBUG)
+    target_compile_definitions(nova-compiler PRIVATE NDEBUG)
 endif()
 
 # ============================================
 # INSTALACIÓN
 # ============================================
 
-install(TARGETS aether-compiler aether-lib
+install(TARGETS nova-compiler nova-lib
     RUNTIME DESTINATION bin
     ARCHIVE DESTINATION lib
 )
 
 # Exportar para uso externo
-install(EXPORT AetherTargets
-    FILE AetherCompilerTargets.cmake
-    NAMESPACE Aether::
-    DESTINATION lib/cmake/Aether
+install(EXPORT NovaTargets
+    FILE NovaCompilerTargets.cmake
+    NAMESPACE Nova::
+    DESTINATION lib/cmake/Nova
 )
 
 # ============================================
@@ -267,13 +267,13 @@ enable_testing()
 # add_subdirectory(tests)
 
 message(STATUS "==================================")
-message(STATUS "Configuración de Aether Language")
+message(STATUS "Configuración de Nova Language")
 message(STATUS "==================================")
 message(STATUS "LLVM Version:        ${LLVM_PACKAGE_VERSION}")
 message(STATUS "ANTLR4 Version:      4.13.1")
 message(STATUS "C++ Standard:        20")
 message(STATUS "Build Type:          ${CMAKE_BUILD_TYPE}")
-message(STATUS "AST Sources:         ${AETHER_AST_SOURCES}")
-message(STATUS "SEMA Sources:        ${AETHER_SEMA_SOURCES}")
-message(STATUS "CodeGen Sources:     ${AETHER_CODEGEN_SOURCES}")
+message(STATUS "AST Sources:         ${NOVA_AST_SOURCES}")
+message(STATUS "SEMA Sources:        ${NOVA_SEMA_SOURCES}")
+message(STATUS "CodeGen Sources:     ${NOVA_CODEGEN_SOURCES}")
 message(STATUS "==================================")

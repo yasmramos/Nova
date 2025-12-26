@@ -9,8 +9,8 @@
  * del AST tipados y listos para el análisis semántico.
  */
 
-#ifndef AETHER_AST_BUILDER_H
-#define AETHER_AST_BUILDER_H
+#ifndef NOVA_AST_BUILDER_H
+#define NOVA_AST_BUILDER_H
 
 #include <memory>
 #include <vector>
@@ -19,21 +19,21 @@
 #include <unordered_map>
 #include <stack>
 #include "antlr4-runtime.h"
-#include "AetherBaseVisitor.h"
+#include "NovaBaseVisitor.h"
 #include "Node.h"
 #include "Types.h"
 #include "Error.h"
 
-namespace aether {
+namespace nova {
 
 /**
  * @class ASTBuilder
- * @brief Convierte CST de ANTLR4 a AST de Aether
+ * @brief Convierte CST de ANTLR4 a AST de Nova
  * 
- * Esta clase hereda de AetherBaseVisitor (generado por ANTLR4)
+ * Esta clase hereda de NovaBaseVisitor (generado por ANTLR4)
  * y convierte cada nodo del árbol de parseo en un nodo de nuestro AST.
  */
-class ASTBuilder : public AetherBaseVisitor {
+class ASTBuilder : public NovaBaseVisitor {
 public:
     /**
      * @brief Constructor
@@ -68,82 +68,82 @@ public:
     // Nota: Los métodos override exactos dependen de la gramática
     // Esta es una implementación genérica que será completada
     
-    std::any visitSourceFile(AetherParser::SourceFileContext* ctx) override;
-    std::any visitModuleDeclaration(AetherParser::ModuleDeclarationContext* ctx) override;
-    std::any visitImportDeclaration(AetherParser::ImportDeclarationContext* ctx) override;
-    std::any visitTopLevelDeclaration(AetherParser::TopLevelDeclarationContext* ctx) override;
+    std::any visitSourceFile(NovaParser::SourceFileContext* ctx) override;
+    std::any visitModuleDeclaration(NovaParser::ModuleDeclarationContext* ctx) override;
+    std::any visitImportDeclaration(NovaParser::ImportDeclarationContext* ctx) override;
+    std::any visitTopLevelDeclaration(NovaParser::TopLevelDeclarationContext* ctx) override;
     
     // Declaraciones
-    std::any visitFunctionDeclaration(AetherParser::FunctionDeclarationContext* ctx) override;
-    std::any visitStructDeclaration(AetherParser::StructDeclarationContext* ctx) override;
-    std::any visitEnumDeclaration(AetherParser::EnumDeclarationContext* ctx) override;
-    std::any visitTraitDeclaration(AetherParser::TraitDeclarationContext* ctx) override;
-    std::any visitImplDeclaration(AetherParser::ImplDeclarationContext* ctx) override;
-    std::any visitTypeAliasDeclaration(AetherParser::TypeAliasDeclarationContext* ctx) override;
-    std::any visitConstantDeclaration(AetherParser::ConstantDeclarationContext* ctx) override;
+    std::any visitFunctionDeclaration(NovaParser::FunctionDeclarationContext* ctx) override;
+    std::any visitStructDeclaration(NovaParser::StructDeclarationContext* ctx) override;
+    std::any visitEnumDeclaration(NovaParser::EnumDeclarationContext* ctx) override;
+    std::any visitTraitDeclaration(NovaParser::TraitDeclarationContext* ctx) override;
+    std::any visitImplDeclaration(NovaParser::ImplDeclarationContext* ctx) override;
+    std::any visitTypeAliasDeclaration(NovaParser::TypeAliasDeclarationContext* ctx) override;
+    std::any visitConstantDeclaration(NovaParser::ConstantDeclarationContext* ctx) override;
     
     // Statements
-    std::any visitBlock(AetherParser::BlockContext* ctx) override;
-    std::any visitVariableDeclaration(AetherParser::VariableDeclarationContext* ctx) override;
-    std::any visitExpressionStatement(AetherParser::ExpressionStatementContext* ctx) override;
-    std::any visitAssignmentStatement(AetherParser::AssignmentStatementContext* ctx) override;
-    std::any visitIfStatement(AetherParser::IfStatementContext* ctx) override;
-    std::any visitLoopStatement(AetherParser::LoopStatementContext* ctx) override;
-    std::any visitMatchStatement(AetherParser::MatchStatementContext* ctx) override;
-    std::any visitReturnStatement(AetherParser::ReturnStatementContext* ctx) override;
-    std::any visitBreakStatement(AetherParser::BreakStatementContext* ctx) override;
-    std::any visitContinueStatement(AetherParser::ContinueStatementContext* ctx) override;
+    std::any visitBlock(NovaParser::BlockContext* ctx) override;
+    std::any visitVariableDeclaration(NovaParser::VariableDeclarationContext* ctx) override;
+    std::any visitExpressionStatement(NovaParser::ExpressionStatementContext* ctx) override;
+    std::any visitAssignmentStatement(NovaParser::AssignmentStatementContext* ctx) override;
+    std::any visitIfStatement(NovaParser::IfStatementContext* ctx) override;
+    std::any visitLoopStatement(NovaParser::LoopStatementContext* ctx) override;
+    std::any visitMatchStatement(NovaParser::MatchStatementContext* ctx) override;
+    std::any visitReturnStatement(NovaParser::ReturnStatementContext* ctx) override;
+    std::any visitBreakStatement(NovaParser::BreakStatementContext* ctx) override;
+    std::any visitContinueStatement(NovaParser::ContinueStatementContext* ctx) override;
     
     // Expresiones
-    std::any visitExpression(AetherParser::ExpressionContext* ctx) override;
-    std::any visitLiteralExpression(AetherParser::LiteralExpressionContext* ctx) override;
-    std::any visitIdentifierExpression(AetherParser::IdentifierExpressionContext* ctx) override;
-    std::any visitBinaryExpr(AetherParser::BinaryExprContext* ctx) override;
-    std::any visitUnaryExpr(AetherParser::UnaryExprContext* ctx) override;
-    std::any visitCallExpr(AetherParser::CallExprContext* ctx) override;
-    std::any visitFieldExpr(AetherParser::FieldExprContext* ctx) override;
-    std::any visitTupleIndexExpr(AetherParser::TupleIndexExprContext* ctx) override;
-    std::any visitIfExpr(AetherParser::IfExprContext* ctx) override;
-    std::any visitMatchExpr(AetherParser::MatchExprContext* ctx) override;
-    std::any visitLoopExpr(AetherParser::LoopExprContext* ctx) override;
-    std::any visitRangeExpr(AetherParser::RangeExprContext* ctx) override;
-    std::any visitCastExpr(AetherParser::CastExprContext* ctx) override;
-    std::any visitLambdaExpr(AetherParser::LambdaExprContext* ctx) override;
-    std::any visitArrayExpression(AetherParser::ArrayExpressionContext* ctx) override;
-    std::any visitTupleExpression(AetherParser::TupleExpressionContext* ctx) override;
-    std::any visitStructExpression(AetherParser::StructExpressionContext* ctx) override;
-    std::any visitAwaitExpression(AetherParser::AwaitExpressionContext* ctx) override;
+    std::any visitExpression(NovaParser::ExpressionContext* ctx) override;
+    std::any visitLiteralExpression(NovaParser::LiteralExpressionContext* ctx) override;
+    std::any visitIdentifierExpression(NovaParser::IdentifierExpressionContext* ctx) override;
+    std::any visitBinaryExpr(NovaParser::BinaryExprContext* ctx) override;
+    std::any visitUnaryExpr(NovaParser::UnaryExprContext* ctx) override;
+    std::any visitCallExpr(NovaParser::CallExprContext* ctx) override;
+    std::any visitFieldExpr(NovaParser::FieldExprContext* ctx) override;
+    std::any visitTupleIndexExpr(NovaParser::TupleIndexExprContext* ctx) override;
+    std::any visitIfExpr(NovaParser::IfExprContext* ctx) override;
+    std::any visitMatchExpr(NovaParser::MatchExprContext* ctx) override;
+    std::any visitLoopExpr(NovaParser::LoopExprContext* ctx) override;
+    std::any visitRangeExpr(NovaParser::RangeExprContext* ctx) override;
+    std::any visitCastExpr(NovaParser::CastExprContext* ctx) override;
+    std::any visitLambdaExpr(NovaParser::LambdaExprContext* ctx) override;
+    std::any visitArrayExpression(NovaParser::ArrayExpressionContext* ctx) override;
+    std::any visitTupleExpression(NovaParser::TupleExpressionContext* ctx) override;
+    std::any visitStructExpression(NovaParser::StructExpressionContext* ctx) override;
+    std::any visitAwaitExpression(NovaParser::AwaitExpressionContext* ctx) override;
     
     // Tipos
-    std::any visitType(AetherParser::TypeContext* ctx) override;
-    std::any visitPrimitiveType(AetherParser::PrimitiveTypeContext* ctx) override;
-    std::any visitTypeReference(AetherParser::TypeReferenceContext* ctx) override;
-    std::any visitGenericType(AetherParser::GenericTypeContext* ctx) override;
-    std::any visitFunctionType(AetherParser::FunctionTypeContext* ctx) override;
-    std::any visitTupleType(AetherParser::TupleTypeContext* ctx) override;
-    std::any visitArrayType(AetherParser::ArrayTypeContext* ctx) override;
-    std::any visitReferenceType(AetherParser::ReferenceTypeContext* ctx) override;
+    std::any visitType(NovaParser::TypeContext* ctx) override;
+    std::any visitPrimitiveType(NovaParser::PrimitiveTypeContext* ctx) override;
+    std::any visitTypeReference(NovaParser::TypeReferenceContext* ctx) override;
+    std::any visitGenericType(NovaParser::GenericTypeContext* ctx) override;
+    std::any visitFunctionType(NovaParser::FunctionTypeContext* ctx) override;
+    std::any visitTupleType(NovaParser::TupleTypeContext* ctx) override;
+    std::any visitArrayType(NovaParser::ArrayTypeContext* ctx) override;
+    std::any visitReferenceType(NovaParser::ReferenceTypeContext* ctx) override;
     
     // Literales
-    std::any visitIntegerLiteral(AetherParser::IntegerLiteralContext* ctx) override;
-    std::any visitFloatLiteral(AetherParser::FloatLiteralContext* ctx) override;
-    std::any visitBooleanLiteral(AetherParser::BooleanLiteralContext* ctx) override;
-    std::any visitCharacterLiteral(AetherParser::CharacterLiteralContext* ctx) override;
-    std::any visitStringLiteral(AetherParser::StringLiteralContext* ctx) override;
+    std::any visitIntegerLiteral(NovaParser::IntegerLiteralContext* ctx) override;
+    std::any visitFloatLiteral(NovaParser::FloatLiteralContext* ctx) override;
+    std::any visitBooleanLiteral(NovaParser::BooleanLiteralContext* ctx) override;
+    std::any visitCharacterLiteral(NovaParser::CharacterLiteralContext* ctx) override;
+    std::any visitStringLiteral(NovaParser::StringLiteralContext* ctx) override;
     
     // Patrones
-    std::any visitPattern(AetherParser::PatternContext* ctx) override;
-    std::any visitIdentifierPattern(AetherParser::IdentifierPatternContext* ctx) override;
-    std::any visitTuplePattern(AetherParser::TuplePatternContext* ctx) override;
-    std::any visitStructPattern(AetherParser::StructPatternContext* ctx) override;
-    std::any visitWildcardPattern(AetherParser::WildcardPatternContext* ctx) override;
+    std::any visitPattern(NovaParser::PatternContext* ctx) override;
+    std::any visitIdentifierPattern(NovaParser::IdentifierPatternContext* ctx) override;
+    std::any visitTuplePattern(NovaParser::TuplePatternContext* ctx) override;
+    std::any visitStructPattern(NovaParser::StructPatternContext* ctx) override;
+    std::any visitWildcardPattern(NovaParser::WildcardPatternContext* ctx) override;
     
     // Parámetros
-    std::any visitParameter(AetherParser::ParameterContext* ctx) override;
-    std::any visitFunctionParameters(AetherParser::FunctionParametersContext* ctx) override;
+    std::any visitParameter(NovaParser::ParameterContext* ctx) override;
+    std::any visitFunctionParameters(NovaParser::FunctionParametersContext* ctx) override;
     
     // Match arms
-    std::any visitMatchArm(AetherParser::MatchArmContext* ctx) override;
+    std::any visitMatchArm(NovaParser::MatchArmContext* ctx) override;
     
 protected:
     // Métodos helper
@@ -161,12 +161,12 @@ protected:
     /**
      * @brief Convierte un tipo del parser a tipo del sistema
      */
-    Type* convertType(AetherParser::TypeContext* ctx);
+    Type* convertType(NovaParser::TypeContext* ctx);
     
     /**
      * @brief Convierte un path de la gramática a Path del sistema
      */
-    Path convertPath(AetherParser::QualifiedNameContext* ctx);
+    Path convertPath(NovaParser::QualifiedNameContext* ctx);
     
     /**
      * @brief Reporta un error de construcción del AST
@@ -246,6 +246,6 @@ public:
     static std::string toJson(ModuleNode* module);
 };
 
-} // namespace aether
+} // namespace nova
 
-#endif // AETHER_AST_BUILDER_H
+#endif // NOVA_AST_BUILDER_H

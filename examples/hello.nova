@@ -1,0 +1,7 @@
+// examples/hello.nova
+// Programa Hola Mundo en Nova
+
+func main() -> int {
+    print("¡Hola, Mundo desde Nova!");
+    return 0;
+}

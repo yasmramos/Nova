@@ -6,13 +6,13 @@
  * de línea, columna y archivo.
  */
 
-#ifndef AETHER_SOURCE_LOCATION_H
-#define AETHER_SOURCE_LOCATION_H
+#ifndef NOVA_SOURCE_LOCATION_H
+#define NOVA_SOURCE_LOCATION_H
 
 #include <string>
 #include <optional>
 
-namespace aether {
+namespace nova {
 
 /**
  * @class SourceLocation
@@ -162,6 +162,6 @@ inline SourceLocation combineLocations(const SourceLocation& loc1, const SourceL
     return SourceLocation(loc1.getFile(), loc1.getLine(), loc1.getColumn());
 }
 
-} // namespace aether
+} // namespace nova
 
-#endif // AETHER_SOURCE_LOCATION_H
+#endif // NOVA_SOURCE_LOCATION_H

@@ -6,8 +6,8 @@
  * sintácticos y léxicos con información precisa de ubicación.
  */
 
-#ifndef AETHER_ERROR_H
-#define AETHER_ERROR_H
+#ifndef NOVA_ERROR_H
+#define NOVA_ERROR_H
 
 #include <string>
 #include <vector>
@@ -15,7 +15,7 @@
 #include <optional>
 #include "SourceLocation.h"
 
-namespace aether {
+namespace nova {
 
 /**
  * @enum Severity
@@ -368,6 +368,6 @@ private:
     std::ostringstream message_;
 };
 
-} // namespace aether
+} // namespace nova
 
-#endif // AETHER_ERROR_H
+#endif // NOVA_ERROR_H

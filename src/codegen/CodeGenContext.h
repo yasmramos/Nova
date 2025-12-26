@@ -7,8 +7,8 @@
  * y tablas de símbolos para valores LLVM.
  */
 
-#ifndef AETHER_CODEGEN_CONTEXT_H
-#define AETHER_CODEGEN_CONTEXT_H
+#ifndef NOVA_CODEGEN_CONTEXT_H
+#define NOVA_CODEGEN_CONTEXT_H
 
 #include <memory>
 #include <string>
@@ -36,7 +36,7 @@ class AllocaInst;
 // Forward declarations
 struct Symbol;
 
-namespace aether {
+namespace nova {
 
 /**
  * @class CodeGenContext
@@ -55,7 +55,7 @@ public:
      * @brief Constructor
      * @param moduleName Nombre del módulo LLVM
      */
-    explicit CodeGenContext(std::string moduleName = "AetherModule");
+    explicit CodeGenContext(std::string moduleName = "NovaModule");
     
     /**
      * @brief Destructor
@@ -160,17 +160,17 @@ public:
     );
     
     /**
-     * @brief Convierte un tipo de Aether a tipo de LLVM
+     * @brief Convierte un tipo de Nova a tipo de LLVM
      */
-    llvm::Type* convertType(Type* aetherType);
+    llvm::Type* convertType(Type* novaType);
     
     /**
-     * @brief Convierte un tipo primitivo de Aether a LLVM
+     * @brief Convierte un tipo primitivo de Nova a LLVM
      */
     llvm::Type* convertPrimitiveType(PrimitiveType* type);
     
     /**
-     * @brief Convierte un tipo función de Aether a LLVM
+     * @brief Convierte un tipo función de Nova a LLVM
      */
     llvm::FunctionType* convertFunctionType(FunctionType* type);
     
@@ -309,6 +309,6 @@ public:
         : std::runtime_error(msg + " at " + loc) {}
 };
 
-} // namespace aether
+} // namespace nova
 
-#endif // AETHER_CODEGEN_CONTEXT_H
+#endif // NOVA_CODEGEN_CONTEXT_H

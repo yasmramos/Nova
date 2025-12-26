@@ -13,8 +13,8 @@
  * - Reporta errores semánticos
  */
 
-#ifndef AETHER_TYPE_CHECKER_H
-#define AETHER_TYPE_CHECKER_H
+#ifndef NOVA_TYPE_CHECKER_H
+#define NOVA_TYPE_CHECKER_H
 
 #include <memory>
 #include <vector>
@@ -27,7 +27,7 @@
 #include "SymbolTable.h"
 #include "Error.h"
 
-namespace aether {
+namespace nova {
 
 /**
  * @class TypeChecker
@@ -377,6 +377,6 @@ private:
     void checkInitialization(LetDeclNode* decl);
 };
 
-} // namespace aether
+} // namespace nova
 
-#endif // AETHER_TYPE_CHECKER_H
+#endif // NOVA_TYPE_CHECKER_H

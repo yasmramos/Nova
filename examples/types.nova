@@ -1,5 +1,5 @@
-// examples/types.ae
-// Ejemplo del sistema de tipos avanzado de Aether
+// examples/types.nova
+// Ejemplo del sistema de tipos avanzado de Nova
 
 // Algebraic Data Types
 type Shape = 

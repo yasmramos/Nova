@@ -10,8 +10,8 @@
  * estén correctamente definidas y sean accesibles.
  */
 
-#ifndef AETHER_SYMBOL_TABLE_H
-#define AETHER_SYMBOL_TABLE_H
+#ifndef NOVA_SYMBOL_TABLE_H
+#define NOVA_SYMBOL_TABLE_H
 
 #include <string>
 #include <vector>
@@ -22,7 +22,7 @@
 #include "Types.h"
 #include "Node.h"
 
-namespace aether {
+namespace nova {
 
 /**
  * @enum SymbolKind
@@ -421,6 +421,6 @@ inline Symbol makeType(const std::string& name, Type* type,
                   StorageClass::None, Visibility::Public);
 }
 
-} // namespace aether
+} // namespace nova
 
-#endif // AETHER_SYMBOL_TABLE_H
+#endif // NOVA_SYMBOL_TABLE_H

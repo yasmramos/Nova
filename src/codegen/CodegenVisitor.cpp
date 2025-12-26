@@ -8,7 +8,7 @@
 #include <llvm/IR/Intrinsics.h>
 #include <sstream>
 
-namespace aether {
+namespace nova {
 
 // ============================================
 // CONSTRUCTOR
@@ -800,4 +800,4 @@ llvm::Type* CodegenVisitor::getLLVMType(Node* node) {
     return llvm::Type::getVoidTy(context_.getLLVMContext());
 }
 
-} // namespace aether
+} // namespace nova

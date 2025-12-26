@@ -20,7 +20,7 @@
 #include <llvm/Target/TargetMachine.h>
 #endif
 
-namespace aether {
+namespace nova {
 
 // ============================================
 // CONSTRUCTOR Y DESTRUCTOR
@@ -136,12 +136,12 @@ llvm::AllocaInst* CodeGenContext::createEntryBlockAlloca(
     return tmpBuilder.CreateAlloca(type, nullptr, name);
 }
 
-llvm::Type* CodeGenContext::convertType(Type* aetherType) {
-    if (!aetherType) {
+llvm::Type* CodeGenContext::convertType(Type* type) {
+    if (!type) {
         return llvm::Type::getVoidTy(*llvmContext_);
     }
     
-    switch (aetherType->getKind()) {
+    switch (type->getKind()) {
         case TypeKind::Void:
             return llvm::Type::getVoidTy(*llvmContext_);
             
@@ -187,7 +187,7 @@ llvm::Type* CodeGenContext::convertType(Type* aetherType) {
             return llvm::Type::getInt8PtrTy(*llvmContext_);
             
         case TypeKind::Tuple: {
-            auto* tupleType = static_cast<TupleType*>(aetherType);
+            auto* tupleType = static_cast<TupleType*>(type);
             std::vector<llvm::Type*> elements;
             for (auto* elem : tupleType->getElements()) {
                 elements.push_back(convertType(elem));
@@ -196,25 +196,25 @@ llvm::Type* CodeGenContext::convertType(Type* aetherType) {
         }
         
         case TypeKind::Array: {
-            auto* arrayType = static_cast<ArrayType*>(aetherType);
+            auto* arrayType = static_cast<ArrayType*>(type);
             llvm::Type* elemType = convertType(arrayType->getElementType());
             return llvm::ArrayType::get(elemType, arrayType->getSize());
         }
         
         case TypeKind::Function: {
-            auto* funcType = static_cast<FunctionType*>(aetherType);
+            auto* funcType = static_cast<FunctionType*>(type);
             return convertFunctionType(funcType);
         }
         
         case TypeKind::Reference:
         case TypeKind::Pointer: {
-            auto* refType = static_cast<ReferenceType*>(aetherType);
+            auto* refType = static_cast<ReferenceType*>(type);
             llvm::Type* elemType = convertType(refType->getReferencedType());
             return llvm::PointerType::get(elemType, 0);
         }
         
         case TypeKind::Struct: {
-            auto* structType = static_cast<StructType*>(aetherType);
+            auto* structType = static_cast<StructType*>(type);
             std::vector<llvm::Type*> fields;
             for (const auto& field : structType->getFields()) {
                 fields.push_back(convertType(field.type));
@@ -392,4 +392,4 @@ CodeGenContext::ModuleStats CodeGenContext::getStats() const {
     return stats;
 }
 
-} // namespace aether
+} // namespace nova

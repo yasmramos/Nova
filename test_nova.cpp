@@ -1,6 +1,6 @@
 /**
- * @file test_aether.cpp
- * @brief Tests básicos para el compilador Aether
+ * @file test_nova.cpp
+ * @brief Tests básicos para el compilador Nova
  * 
  * Este archivo contiene tests unitarios básicos para verificar
  * que los componentes del compilador funcionan correctamente.
@@ -15,7 +15,7 @@
 #include "src/utils/SourceLocation.h"
 #include "src/sema/SymbolTable.h"
 
-using namespace aether;
+using namespace nova;
 
 void test_types() {
     std::cout << "=== Test: Sistema de Tipos ===" << std::endl;
@@ -126,18 +126,18 @@ void test_symbol_table() {
 void test_source_location() {
     std::cout << "=== Test: Source Location ===" << std::endl;
     
-    SourceLocation loc("test.aether", 10, 5);
+    SourceLocation loc("test.nova", 10, 5);
     assert(loc.isValid());
-    assert(loc.getFile() == "test.aether");
+    assert(loc.getFile() == "test.nova");
     assert(loc.getLine() == 10);
     assert(loc.getColumn() == 5);
-    assert(loc.toString() == "test.aether:10:5");
+    assert(loc.toString() == "test.nova:10:5");
     
     SourceLocation invalid;
     assert(!invalid.isValid());
     assert(invalid.toString() == "<unknown>");
     
-    SourceRange range(loc, SourceLocation("test.aether", 12, 3));
+    SourceRange range(loc, SourceLocation("test.nova", 12, 3));
     assert(range.isValid());
     assert(range.getLineCount() == 3);
     
@@ -154,7 +154,7 @@ void test_error_handler() {
     assert(handler.getWarningCount() == 0);
     
     // Reportar error
-    SourceLocation loc("test.aether", 5, 10);
+    SourceLocation loc("test.nova", 5, 10);
     handler.reportError(ErrorCode::SemanticTypeMismatch, loc, "Type mismatch error");
     
     assert(handler.getErrorCount() == 1);
@@ -198,7 +198,7 @@ void test_primitives_operations() {
 
 int main() {
     std::cout << "\n╔══════════════════════════════════════════╗" << std::endl;
-    std::cout << "║  Aether Language - Unit Tests            ║" << std::endl;
+    std::cout << "║  Nova Language - Unit Tests              ║" << std::endl;
     std::cout << "╚══════════════════════════════════════════╝" << std::endl << std::endl;
     
     try {

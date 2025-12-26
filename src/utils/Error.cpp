@@ -6,7 +6,7 @@
 #include "Error.h"
 #include <iostream>
 
-namespace aether {
+namespace nova {
 
 // Diagnostic methods
 std::string Diagnostic::toString() const {
@@ -118,4 +118,4 @@ bool ErrorHandler::shouldPrintImmediate() const {
     return true;
 }
 
-} // namespace aether
+} // namespace nova

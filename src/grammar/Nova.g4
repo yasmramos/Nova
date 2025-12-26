@@ -1,5 +1,5 @@
 /**
- * Gramática ANTLR4 para el Lenguaje Aether
+ * Gramática ANTLR4 para el Lenguaje Nova
  * 
  * El lenguaje de programación más avanzado del mundo
  * 
@@ -11,7 +11,7 @@
  * - Null safety
  * - Ownership semantics
  */
-grammar Aether;
+grammar Nova;
 
 // ============================================
 // REGLAS DE ENTRADA

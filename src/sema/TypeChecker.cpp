@@ -8,7 +8,7 @@
 #include <sstream>
 #include <algorithm>
 
-namespace aether {
+namespace nova {
 
 // ============================================
 // CONSTRUCTOR Y MÉTODOS PRINCIPALES
@@ -954,4 +954,4 @@ Type* TypeChecker::resolveQualifiedPath(const Path& path) {
     return typeContext_.getErrorType();
 }
 
-} // namespace aether
+} // namespace nova

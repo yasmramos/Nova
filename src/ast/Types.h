@@ -1,13 +1,13 @@
 /**
  * @file Types.h
- * @brief Sistema de tipos para el lenguaje Aether
+ * @brief Sistema de tipos para el lenguaje Nova
  * 
  * Define la jerarquía completa de tipos del lenguaje,
  * incluyendo tipos primitivos, compuestos, genéricos y referencias.
  */
 
-#ifndef AETHER_TYPES_H
-#define AETHER_TYPES_H
+#ifndef NOVA_TYPES_H
+#define NOVA_TYPES_H
 
 #include <string>
 #include <vector>
@@ -17,7 +17,7 @@
 #include <set>
 #include <sstream>
 
-namespace aether {
+namespace nova {
 
 // ============================================
 // ENUMS DE TIPOS
@@ -165,7 +165,7 @@ enum class ConversionKind {
  * @brief Clase base abstracta para todos los tipos
  * 
  * Representa la interfaz común para todas las categorías
- * de tipos en el sistema de tipos de Aether.
+ * de tipos en el sistema de tipos de Nova.
  */
 class Type {
 public:
@@ -900,6 +900,6 @@ inline std::ostream& operator<<(std::ostream& os, const Path& path) {
     return os;
 }
 
-} // namespace aether
+} // namespace nova
 
-#endif // AETHER_TYPES_H
+#endif // NOVA_TYPES_H

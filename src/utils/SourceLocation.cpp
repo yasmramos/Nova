@@ -5,10 +5,10 @@
 
 #include "SourceLocation.h"
 
-namespace aether {
+namespace nova {
 
 // SourceLocation methods are inline in the header
 
 // SourceRange methods are inline in the header
 
-} // namespace aether
+} // namespace nova

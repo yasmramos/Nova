@@ -15,7 +15,7 @@
 #include "src/codegen/CodeGenContext.h"
 #include "src/codegen/CodegenVisitor.h"
 
-using namespace aether;
+using namespace nova;
 
 // Funciones auxiliares para construir el AST de prueba
 FunctionDeclNode* createMainFunction(TypeContext& ctx) {
@@ -290,7 +290,7 @@ void test_type_conversions() {
 
 int main() {
     std::cout << "\n╔══════════════════════════════════════════╗" << std::endl;
-    std::cout << "║  Aether Compiler - CodeGen Tests         ║" << std::endl;
+    std::cout << "║  Nova Compiler - CodeGen Tests           ║" << std::endl;
     std::cout << "╚══════════════════════════════════════════╝" << std::endl << std::endl;
     
     try {

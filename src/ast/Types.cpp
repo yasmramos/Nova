@@ -7,7 +7,7 @@
 #include <cassert>
 #include <algorithm>
 
-namespace aether {
+namespace nova {
 
 // ============================================
 // TYPE BASE METHODS
@@ -802,4 +802,4 @@ void TypeContext::dump(std::ostream& os) const {
     }
 }
 
-} // namespace aether
+} // namespace nova

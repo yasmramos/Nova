@@ -1,8 +1,8 @@
-# Aether Programming Language
+# Nova Programming Language
 
 ## El Lenguaje de Programación Más Avanzado del Mundo
 
-Aether es un lenguaje de programación de propósito general diseñado para ser el más avanzado del mundo, combinando las mejores características de los lenguajes modernos con un rendimiento excepcional.
+Nova es un lenguaje de programación de propósito general diseñado para ser el más avanzado del mundo, combinando las mejores características de los lenguajes modernos con un rendimiento excepcional.
 
 ## Características Principales
 
@@ -74,21 +74,21 @@ make -j$(nproc)
 
 ```bash
 # Compilar un archivo
-./aether-compiler programa.aether
+./nova-compiler programa.nova
 
 # Con optimización
-./aether-compiler -O2 -o programa programa.aether
+./nova-compiler -O2 -o programa programa.nova
 
 # Generar LLVM IR
-./aether-compiler --emit-llvm programa.aether
+./nova-compiler --emit-llvm programa.nova
 
 # Ver ayuda
-./aether-compiler --help
+./nova-compiler --help
 ```
 
-## Ejemplo de Código Aether
+## Ejemplo de Código Nova
 
-```aether
+```nova
 // Definición de tipos algebraicos
 type Shape = 
   | Circle(radius: f64)
@@ -149,7 +149,6 @@ MIT License
 ## Autor
 
 Yasmín Ramos (@yasmramos)
-
 ---
 
-*"Code is poetry written for machines."* - Aether Team
+*"Code is poetry written for machines."* - Nova Team

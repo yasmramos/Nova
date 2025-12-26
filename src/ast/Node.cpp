@@ -7,7 +7,7 @@
 #include "Types.h"
 #include <sstream>
 
-namespace aether {
+namespace nova {
 
 // ============================================
 // MÉTODOS ESTÁTICOS DE NODE
@@ -281,4 +281,4 @@ std::string UnaryOpToString(UnaryOp op) {
     }
 }
 
-} // namespace aether
+} // namespace nova
