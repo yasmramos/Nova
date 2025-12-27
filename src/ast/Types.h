@@ -145,6 +145,10 @@ enum class UnaryOp {
     RefMut,   // &mut expr
 };
 
+// Declaraciones de funciones auxiliares para convertir operadores a string
+std::string BinaryOpToString(BinaryOp op);
+std::string UnaryOpToString(UnaryOp op);
+
 /**
  * @enum ConversionKind
  * @brief Tipos de conversión entre tipos
@@ -479,7 +483,7 @@ public:
     explicit StructType(const std::string& name)
         : Type(TypeKind::Struct), name_(name), fields_() {}
     
-    const std::string& getName() const { return name_; }
+    std::string getName() const override { return name_; }
     void setName(const std::string& n) { name_ = n; }
     
     const std::vector<StructField>& getFields() const { return fields_; }
@@ -493,7 +497,6 @@ public:
     StructField* getField(const std::string& name);
     size_t getFieldIndex(const std::string& name) const;
     
-    std::string getName() const override;
     bool isEqual(const Type* other) const override;
     
 private:
@@ -525,7 +528,7 @@ public:
     explicit EnumType(const std::string& name)
         : Type(TypeKind::Enum), name_(name), variants_() {}
     
-    const std::string& getName() const { return name_; }
+    std::string getName() const override { return name_; }
     
     const std::vector<EnumVariant>& getVariants() const { return variants_; }
     std::vector<EnumVariant>& getVariants() { return variants_; }
@@ -535,7 +538,6 @@ public:
     EnumVariant* getVariant(const std::string& name);
     int64_t getVariantDiscriminant(const std::string& name) const;
     
-    std::string getName() const override;
     bool isEqual(const Type* other) const override;
     
 private:
@@ -652,9 +654,8 @@ public:
     explicit GenericType(const std::string& name)
         : Type(TypeKind::Generic), name_(name) {}
     
-    const std::string& getName() const { return name_; }
+    std::string getName() const override { return name_; }
     
-    std::string getName() const override;
     bool isEqual(const Type* other) const override;
     
 private:
@@ -670,10 +671,9 @@ public:
     TypeAlias(const std::string& name, Type* underlyingType)
         : Type(TypeKind::Alias), name_(name), underlyingType_(underlyingType) {}
     
-    const std::string& getName() const { return name_; }
+    std::string getName() const override { return name_; }
     Type* getUnderlyingType() const { return underlyingType_; }
     
-    std::string getName() const override;
     bool isEqual(const Type* other) const override;
     
 private:
@@ -710,9 +710,8 @@ public:
     explicit UnresolvedType(const std::string& name)
         : Type(TypeKind::Unresolved), name_(name) {}
     
-    const std::string& getName() const { return name_; }
+    std::string getName() const override { return name_; }
     
-    std::string getName() const override;
     bool isEqual(const Type* other) const override;
     
 private:

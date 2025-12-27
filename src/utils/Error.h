@@ -10,6 +10,7 @@
 #ifndef NOVA_ERROR_H
 #define NOVA_ERROR_H
 
+#include <iostream>
 #include <string>
 #include <vector>
 #include <sstream>

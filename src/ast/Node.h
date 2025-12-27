@@ -14,7 +14,8 @@
 #include <vector>
 #include <memory>
 #include <optional>
-#include "SourceLocation.h"
+#include <iostream>
+#include "utils/SourceLocation.h"
 #include "Types.h"
 
 namespace nova {
@@ -564,7 +565,7 @@ class LetDeclNode : public Declaration {
 public:
     explicit LetDeclNode(SourceLocation loc = SourceLocation())
         : Declaration(NodeKind::LetDecl, std::move(loc)), isMutable_(false), 
-          pattern_(), initializer_(), type_() {}
+          name_(), initializer_(), type_() {}
     
     bool isMutable() const { return isMutable_; }
     void setMutable(bool val = true) { isMutable_ = val; }

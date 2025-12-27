@@ -335,10 +335,6 @@ void StructType::updateLayout() {
     setAlignment(maxAlign);
 }
 
-std::string StructType::getName() const {
-    return name_;
-}
-
 bool StructType::isEqual(const Type* other) const {
     if (!Type::isEqual(other)) return false;
     
@@ -362,10 +358,6 @@ int64_t EnumType::getVariantDiscriminant(const std::string& name) const {
         if (variant.name == name) return variant.discriminant;
     }
     return -1;
-}
-
-std::string EnumType::getName() const {
-    return name_;
 }
 
 bool EnumType::isEqual(const Type* other) const {
@@ -454,10 +446,6 @@ bool ResultType::isEqual(const Type* other) const {
 // GENERIC TYPE
 // ============================================
 
-std::string GenericType::getName() const {
-    return name_;
-}
-
 bool GenericType::isEqual(const Type* other) const {
     if (!Type::isEqual(other)) return false;
     
@@ -468,10 +456,6 @@ bool GenericType::isEqual(const Type* other) const {
 // ============================================
 // TYPE ALIAS
 // ============================================
-
-std::string TypeAlias::getName() const {
-    return name_;
-}
 
 bool TypeAlias::isEqual(const Type* other) const {
     if (!Type::isEqual(other)) return false;
@@ -496,10 +480,6 @@ bool ErrorType::isEqual(const Type* other) const {
 // ============================================
 // UNRESOLVED TYPE
 // ============================================
-
-std::string UnresolvedType::getName() const {
-    return "<unresolved: " + name_ + ">";
-}
 
 bool UnresolvedType::isEqual(const Type* other) const {
     if (!Type::isEqual(other)) return false;
