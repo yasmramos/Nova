@@ -1,0 +1,490 @@
+/**
+ * Programa de prueba para el lenguaje Nova
+ * Demuestra todas las características principales
+ */
+
+module examples.test;
+
+import std.io;
+use std.collections;
+
+// ============================================
+// CONSTANTES Y TIPOS BÁSICOS
+// ============================================
+
+const PI: f64 = 3.14159265359;
+const MAX_VALUE: i32 = 1000;
+const GREETING: str = "Hello, Nova!";
+
+// Alias de tipos
+type Number = f64;
+type Result<T> = Option<T>;
+type Callback = fn(i32, str) -> bool;
+
+// ============================================
+// STRUCTS (Tipos de datos estructurados)
+// ============================================
+
+struct Point {
+    pub x: f64,
+    pub y: f64,
+}
+
+struct Person {
+    pub name: str,
+    pub age: u32,
+    pub email: Option<str>,
+}
+
+struct Rectangle {
+    pub top_left: Point,
+    pub bottom_right: Point,
+}
+
+// ============================================
+// ENUMS (Algebraic Data Types)
+// ============================================
+
+enum Option<T> {
+    Some(T),
+    None,
+}
+
+enum Result<T, E> {
+    Ok(T),
+    Err(E),
+}
+
+enum Message {
+    Quit,
+    Move { x: i32, y: i32 },
+    Write(str),
+    ChangeColor(i32, i32, i32),
+}
+
+enum Tree<T> {
+    Leaf(T),
+    Node(Box<Tree<T>>, Box<Tree<T>>),
+}
+
+// ============================================
+// TRAITS (Interfaces / Type classes)
+// ============================================
+
+trait Drawable {
+    fn draw(self) -> void;
+    fn get_area(self) -> f64;
+}
+
+trait Printable {
+    fn print(self) -> void;
+}
+
+trait Serializable<T> where T: Clone {
+    fn serialize(self) -> str;
+    fn deserialize(str) -> Self;
+}
+
+// ============================================
+// IMPLEMENTACIONES
+// ============================================
+
+impl Point {
+    pub fn new(x: f64, y: f64) -> Self {
+        Point { x, y }
+    }
+    
+    pub fn distance(&self, other: &Point) -> f64 {
+        let dx = other.x - self.x;
+        let dy = other.y - self.y;
+        (dx ** 2.0 + dy ** 2.0) ** 0.5
+    }
+    
+    pub fn translate(&mut self, dx: f64, dy: f64) -> void {
+        self.x += dx;
+        self.y += dy;
+    }
+}
+
+impl Drawable for Rectangle {
+    fn draw(self) -> void {
+        // Implementación de dibujo
+        println!("Drawing rectangle");
+    }
+    
+    fn get_area(self) -> f64 {
+        let width = self.bottom_right.x - self.top_left.x;
+        let height = self.top_left.y - self.bottom_right.y;
+        width * height
+    }
+}
+
+impl<T> Option<T> {
+    pub fn is_some(&self) -> bool {
+        match self {
+            Option::Some(_) => true,
+            Option::None => false,
+        }
+    }
+    
+    pub fn unwrap(self) -> T {
+        match self {
+            Option::Some(value) => value,
+            Option::None => panic!("Called unwrap on None"),
+        }
+    }
+    
+    pub fn map<U>(self, f: fn(T) -> U) -> Option<U> {
+        match self {
+            Option::Some(value) => Option::Some(f(value)),
+            Option::None => Option::None,
+        }
+    }
+}
+
+// ============================================
+// FUNCIONES
+// ============================================
+
+// Función simple con inferencia de tipos
+fn add(a: i32, b: i32) -> i32 {
+    a + b
+}
+
+// Función genérica con constraints
+fn max<T: Ord>(a: T, b: T) -> T {
+    if a > b {
+        a
+    } else {
+        b
+    }
+}
+
+// Función con múltiples constraints
+fn process<T, U>(value: T, callback: fn(T) -> U) -> U 
+where 
+    T: Clone + Serializable<T>,
+    U: Default,
+{
+    callback(value)
+}
+
+// Función asíncrona
+async fn fetch_data(url: str) -> Result<str, Error> {
+    let response = await http_get(url);
+    match response.status {
+        200 => Result::Ok(response.body),
+        _ => Result::Err(Error::new("Request failed")),
+    }
+}
+
+// Función con pattern matching exhaustivo
+fn handle_message(msg: Message) -> void {
+    match msg {
+        Message::Quit => {
+            println!("Quitting...");
+        },
+        Message::Move { x, y } => {
+            println!("Moving to x={}, y={}", x, y);
+        },
+        Message::Write(text) => {
+            println!("Writing: {}", text);
+        },
+        Message::ChangeColor(r, g, b) => {
+            println!("Changing color to RGB({}, {}, {})", r, g, b);
+        },
+    }
+}
+
+// Función recursiva con árbol
+fn tree_sum(tree: &Tree<i32>) -> i32 {
+    match tree {
+        Tree::Leaf(value) => *value,
+        Tree::Node(left, right) => {
+            tree_sum(left) + tree_sum(right)
+        },
+    }
+}
+
+// Función con ownership y borrowing
+fn process_string(s: str) -> str {
+    s + " processed"
+}
+
+fn use_string(s: &str) -> void {
+    println!("{}", s);
+}
+
+fn mutate_string(s: &mut str) -> void {
+    s = s + " mutated";
+}
+
+// Función con closures/lambdas
+fn with_callback(value: i32, callback: fn(i32) -> void) -> void {
+    callback(value);
+}
+
+// Función que retorna closure
+fn make_adder(x: i32) -> fn(i32) -> i32 {
+    |y| -> i32 { x + y }
+}
+
+// ============================================
+// FUNCIONES DE CONTROL DE FLUJO
+// ============================================
+
+// If expression (retorna valor)
+fn classify_number(n: i32) -> str {
+    if n < 0 {
+        "negative"
+    } else if n == 0 {
+        "zero"
+    } else {
+        "positive"
+    }
+}
+
+// Match expression complejo
+fn describe_option(opt: Option<i32>) -> str {
+    match opt {
+        Option::Some(0) => "zero",
+        Option::Some(n) if n < 0 => "negative number",
+        Option::Some(n) if n > 100 => "large number",
+        Option::Some(n) => "positive number",
+        Option::None => "nothing",
+    }
+}
+
+// Loop infinito con break
+fn find_first_even(numbers: [i32]) -> Option<i32> {
+    let mut i = 0;
+    loop {
+        if i >= numbers.len() {
+            break Option::None;
+        }
+        if numbers[i] % 2 == 0 {
+            break Option::Some(numbers[i]);
+        }
+        i += 1;
+    }
+}
+
+// While loop
+fn factorial(n: u32) -> u32 {
+    let mut result = 1;
+    let mut i = 1;
+    while i <= n {
+        result *= i;
+        i += 1;
+    }
+    result
+}
+
+// For loop con rango
+fn sum_range(start: i32, end: i32) -> i32 {
+    let mut sum = 0;
+    for i in start..end {
+        sum += i;
+    }
+    sum
+}
+
+// For loop con iterador
+fn print_all(items: [str]) -> void {
+    for item in items {
+        println!("{}", item);
+    }
+}
+
+// ============================================
+// MANEJO DE ERRORES
+// ============================================
+
+fn divide(a: f64, b: f64) -> Result<f64, str> {
+    if b == 0.0 {
+        Result::Err("Division by zero")
+    } else {
+        Result::Ok(a / b)
+    }
+}
+
+fn safe_operation() -> Result<void, str> {
+    let value = divide(10.0, 2.0)?;
+    println!("Result: {}", value);
+    Result::Ok(())
+}
+
+// ============================================
+// ASYNC/AWAIT
+// ============================================
+
+async fn async_computation(x: i32) -> i32 {
+    await sleep(100);
+    x * 2
+}
+
+async fn parallel_tasks() -> (i32, i32) {
+    let (a, b) = join(
+        async_computation(5),
+        async_computation(10)
+    );
+    (a, b)
+}
+
+// ============================================
+// UNSAFE BLOCKS
+// ============================================
+
+unsafe fn raw_pointer_example() -> void {
+    let x = 42;
+    let ptr = &x as *const i32;
+    let value = *ptr;
+    println!("Value: {}", value);
+}
+
+// ============================================
+// FUNCIONES EXTERNAS (FFI)
+// ============================================
+
+extern func printf(format: str, ...) -> i32;
+
+extern C {
+    fn malloc(size: usize) -> *mut void;
+    fn free(ptr: *mut void) -> void;
+    fn strlen(s: *const char) -> usize;
+}
+
+// ============================================
+// PROGRAMA PRINCIPAL
+// ============================================
+
+fn main() -> i32 {
+    // Variables mutables e inmutables
+    let x = 42;
+    let mut y = 10;
+    
+    // Pattern matching en declaración
+    let (a, b) = (1, 2);
+    let Point { x: px, y: py } = Point::new(3.0, 4.0);
+    
+    // Uso de structs
+    let point = Point::new(1.0, 2.0);
+    let distance = point.distance(&Point::new(4.0, 6.0));
+    println!("Distance: {}", distance);
+    
+    // Uso de enums y pattern matching
+    let maybe_value: Option<i32> = Option::Some(42);
+    match maybe_value {
+        Option::Some(v) => println!("Got value: {}", v),
+        Option::None => println!("No value"),
+    }
+    
+    // Closures
+    let adder = make_adder(5);
+    let result = adder(3);
+    println!("5 + 3 = {}", result);
+    
+    // Async/await
+    let data = await fetch_data("https://api.example.com");
+    
+    // Range expressions
+    let range = 1..10;
+    let inclusive_range = 1...10;
+    
+    // Array y operaciones
+    let numbers = [1, 2, 3, 4, 5];
+    let sum = sum_range(0, 10);
+    
+    // Cast de tipos
+    let int_val: i32 = 42;
+    let float_val = int_val as f64;
+    
+    // Null safety
+    let nullable: Option<str> = Option::None;
+    if nullable.is_some() {
+        let value = nullable.unwrap();
+    }
+    
+    // Tuple operations
+    let tuple = (1, "hello", 3.14);
+    let first = tuple.0;
+    let second = tuple.1;
+    
+    // Lambda/closure inline
+    with_callback(10, |n| {
+        println!("Callback with: {}", n);
+    });
+    
+    // Unsafe block
+    unsafe {
+        raw_pointer_example();
+    }
+    
+    // Type ascription
+    let annotated: f64 = 42.0;
+    
+    println!("Program completed successfully!");
+    0
+}
+
+// ============================================
+// FUNCIONES AUXILIARES
+// ============================================
+
+fn println(msg: str) -> void {
+    extern_printf("{}\n", msg);
+}
+
+async fn http_get(url: str) -> HttpResponse {
+    // Simulación de request HTTP
+    HttpResponse {
+        status: 200,
+        body: "response data",
+    }
+}
+
+async fn sleep(ms: i32) -> void {
+    // Simulación de delay
+}
+
+async fn join<T, U>(fut1: Future<T>, fut2: Future<U>) -> (T, U) {
+    // Implementación de join para futures
+    (await fut1, await fut2)
+}
+
+struct HttpResponse {
+    pub status: i32,
+    pub body: str,
+}
+
+struct Error {
+    pub message: str,
+}
+
+impl Error {
+    fn new(msg: str) -> Self {
+        Error { message: msg }
+    }
+}
+
+trait Ord {
+    fn cmp(self, other: Self) -> Ordering;
+}
+
+enum Ordering {
+    Less,
+    Equal,
+    Greater,
+}
+
+trait Clone {
+    fn clone(self) -> Self;
+}
+
+trait Default {
+    fn default() -> Self;
+}
+
+struct Box<T> {
+    pub value: T,
+}

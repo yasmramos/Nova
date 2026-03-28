@@ -1,0 +1,54 @@
+/**
+ * Programa de prueba MÍNIMO para el lenguaje Nova
+ * Solo características básicas validadas por el parser actual
+ */
+
+module test;
+
+import std;
+
+// Constantes simples
+const PI: f64 = 3.14159;
+const MAX: i32 = 100;
+
+// Struct simple
+struct Point {
+    x: f64
+    y: f64
+}
+
+// Enum simple
+enum Option {
+    Some
+    None
+}
+
+// Trait simple
+trait Printable {
+    print(self) -> void;
+}
+
+// Función simple
+func add(a: i32, b: i32) -> i32 {
+    a + b
+}
+
+// Función con if
+func max(a: i32, b: i32) -> i32 {
+    if a > b {
+        a
+    } else {
+        b
+    }
+}
+
+// Main
+func main() -> i32 {
+    let x = 10;
+    let y = 20;
+    let sum = add(x, y);
+    
+    let point = Point { x: 1.0, y: 2.0 };
+    
+    0
+}
