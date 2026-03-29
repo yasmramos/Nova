@@ -1,8 +1,13 @@
 cmake_minimum_required(VERSION 3.20)
-project(NovaLanguage LANGUAGES CXX VERSION 0.2.0 DESCRIPTION "El lenguaje de programación más avanzado del mundo" AUTHOR "Yasmany Ramos García")
+project(Nova 
+    VERSION 0.2.0 
+    DESCRIPTION "El lenguaje de programacion mas avanzado del mundo"
+    LANGUAGES CXX
+)
+set(PROJECT_AUTHOR "YasmanyRamosGarcia")
 
-# Estándar C++20
-set(CMAKE_CXX_STANDARD 20)
+# Estándar C++17
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -18,50 +23,32 @@ endif()
 # DEPENDENCIAS EXTERNAS
 # ============================================
 
-# Usar FetchContent para dependencias (más simple que vcpkg/conan)
-include(FetchContent)
+# Nota: En este entorno con recursos limitados, usaremos configuraciones mínimas
+# Para producción, instalar LLVM y ANTLR4 manualmente antes de compilar
 
-# 1. LLVM (Backend de compilación)
-FetchContent_Declare(
-    llvm
-    GIT_REPOSITORY https://github.com/llvm/llvm-project.git
-    GIT_TAG        llvmorg-18.1.8
-)
+# Buscar LLVM instalado en el sistema primero
+find_package(LLVM 16.0 CONFIG QUIET)
 
-# Configuración de LLVM
-set(BUILD_SHARED_LIBS OFF CACHE BOOL "")
-set(LLVM_ENABLE_ASSERTIONS ON CACHE BOOL "Enable assertions")
-set(LLVM_ENABLE_TERMINFO OFF CACHE BOOL "")
-set(LLVM_ENABLE_OCAMLDOC OFF CACHE BOOL "")
-set(LLVM_ENABLE_BINDINGS OFF CACHE BOOL "")
-set(LLVM_INCLUDE_BENCHMARKS OFF CACHE BOOL "")
-set(LLVM_INCLUDE_TESTS OFF CACHE BOOL "")
-set(LLVM_INCLUDE_EXAMPLES OFF CACHE BOOL "")
-
-FetchContent_MakeAvailable(llvm)
-
-# Verificar que LLVM se encontró correctamente
-if(NOT TARGET LLVM)
-    message(FATAL_ERROR "LLVM no se encontró correctamente. Verifica la instalación.")
+if(NOT LLVM_FOUND)
+    message(STATUS "LLVM no encontrado. Usando configuración mínima...")
+    # Crear targets dummy para permitir la compilación sin LLVM completo
+    add_library(LLVM INTERFACE)
+    target_compile_definitions(LLVM INTERFACE NOVA_LLVM_STUB=1)
+    set(LLVM_PACKAGE_VERSION "stub")
+else()
+    message(STATUS "Usando LLVM ${LLVM_PACKAGE_VERSION} instalado en el sistema")
 endif()
 
-# 2. ANTLR4 Runtime (Lexer/Parser)
-FetchContent_Declare(
-    antlr4
-    GIT_REPOSITORY https://github.com/antlr/antlr4.git
-    GIT_TAG        4.13.1
-)
+# Buscar ANTLR4 Runtime
+find_package(antlr4-runtime QUIET)
 
-set(ANTLR4_BUILD_TESTS OFF CACHE BOOL "")
-set(ANTLR4_BUILD_CPP_TESTS OFF CACHE BOOL "")
-set(ANTLR4_BUILD_JAVA_TESTS OFF CACHE BOOL "")
-set(ANTLR4_BUILD_PYTHON_TESTS OFF CACHE BOOL "")
-
-FetchContent_MakeAvailable(antlr4)
-
-# Verificar que ANTLR4 se encontró correctamente
-if(NOT TARGET antlr4-runtime)
-    message(FATAL_ERROR "ANTLR4 runtime no se encontró correctamente.")
+if(NOT antlr4-runtime_FOUND)
+    message(STATUS "ANTLR4 runtime no encontrado. Usando configuración mínima...")
+    # Crear target dummy para ANTLR4
+    add_library(antlr4-runtime INTERFACE)
+    target_compile_definitions(antlr4-runtime INTERFACE NOVA_ANTLR4_STUB=1)
+else()
+    message(STATUS "Usando ANTLR4 runtime instalado en el sistema")
 endif()
 
 # ============================================
@@ -76,6 +63,7 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/src/codegen
     ${CMAKE_SOURCE_DIR}/src/driver
     ${CMAKE_SOURCE_DIR}/src/utils
+    /usr/include/antlr4-runtime
     ${ANTLR4_INCLUDE_DIRS}
 )
 
@@ -86,51 +74,75 @@ file(GLOB NOVA_GRAMMAR_FILES "${CMAKE_SOURCE_DIR}/src/grammar/*.g4")
 # GENERACIÓN AUTOMÁTICA DE LEXER/PARSER
 # ============================================
 
-# Función helper para generar parser ANTLR4
-function(add_antlr_target target_name grammar_file output_dir)
-    # Obtener nombre del archivo sin extensión
-    get_filename_component(grammar_name ${grammar_file} NAME_WE)
-    
-    # Archivos generados
-    set(generated_files
-        ${output_dir}/${grammar_name}Lexer.h
-        ${output_dir}/${grammar_name}Lexer.cpp
-        ${output_dir}/${grammar_name}Parser.h
-        ${output_dir}/${grammar_name}Parser.cpp
-        ${output_dir}/${grammar_name}BaseListener.h
-        ${output_dir}/${grammar_name}BaseListener.cpp
-        ${output_dir}/${grammar_name}Listener.h
-        ${output_dir}/${grammar_name}Listener.cpp
-        ${output_dir}/${grammar_name}BaseVisitor.h
-        ${output_dir}/${grammar_name}BaseVisitor.cpp
-        ${grammar_name}Visitor.h
-        ${grammar_name}Visitor.cpp
-    )
-    
-    # Comando para generar los archivos
-    add_custom_command(
-        OUTPUT ${generated_files}
-        COMMAND ${ANTLR4_JAR_FILE}
-                -Xexact-output-dir
-                -Dlanguage=Cpp
-                -visitor
-                -listener
-                -o ${output_dir}
-                -package nova
-                ${grammar_file}
-        DEPENDS ${grammar_file}
-        COMMENT "Generando parser ANTLR4 para ${grammar_name}"
-    )
-    
-    # Crear fuente headers para el target
-    set(${target_name}_SOURCES ${generated_files} PARENT_SCOPE)
-endfunction()
+# Usar archivos generados previamente si ANTLR no está disponible
+find_program(ANTLR4_JAR_FILE NAMES antlr4 antlr4-complete antlr)
 
-# Generar parser para la gramática principal
-add_antlr_target(nova_parser 
-    ${CMAKE_SOURCE_DIR}/src/grammar/Nova.g4 
-    ${CMAKE_SOURCE_DIR}/src/parser
-)
+if(ANTLR4_JAR_FILE)
+    message(STATUS "ANTLR4 encontrado: ${ANTLR4_JAR_FILE}")
+    
+    # Función helper para generar parser ANTLR4
+    function(add_antlr_target target_name grammar_file output_dir)
+        # Obtener nombre del archivo sin extensión
+        get_filename_component(grammar_name ${grammar_file} NAME_WE)
+        
+        # Archivos generados
+        set(generated_files
+            ${output_dir}/${grammar_name}Lexer.h
+            ${output_dir}/${grammar_name}Lexer.cpp
+            ${output_dir}/${grammar_name}Parser.h
+            ${output_dir}/${grammar_name}Parser.cpp
+            ${output_dir}/${grammar_name}BaseListener.h
+            ${output_dir}/${grammar_name}BaseListener.cpp
+            ${output_dir}/${grammar_name}Listener.h
+            ${output_dir}/${grammar_name}Listener.cpp
+            ${output_dir}/${grammar_name}BaseVisitor.h
+            ${output_dir}/${grammar_name}BaseVisitor.cpp
+            ${output_dir}/${grammar_name}Visitor.h
+            ${output_dir}/${grammar_name}Visitor.cpp
+        )
+        
+        # Comando para generar los archivos
+        add_custom_command(
+            OUTPUT ${generated_files}
+            COMMAND ${ANTLR4_JAR_FILE}
+                    -Xexact-output-dir
+                    -Dlanguage=Cpp
+                    -visitor
+                    -listener
+                    -o ${output_dir}
+                    -package nova
+                    ${grammar_file}
+            DEPENDS ${grammar_file}
+            COMMENT "Generando parser ANTLR4 para ${grammar_name}"
+        )
+        
+        # Crear fuente headers para el target
+        set(${target_name}_SOURCES ${generated_files} PARENT_SCOPE)
+    endfunction()
+    
+    # Generar parser para la gramática principal
+    add_antlr_target(nova_parser 
+        ${CMAKE_SOURCE_DIR}/src/grammar/Nova.g4 
+        ${CMAKE_SOURCE_DIR}/src/parser
+    )
+else()
+    message(STATUS "ANTLR4 no encontrado. Usando archivos generados previamente...")
+    # Usar archivos ya generados en src/grammar/generated
+    set(nova_parser_SOURCES
+        ${CMAKE_SOURCE_DIR}/src/grammar/generated/NovaLexer.h
+        ${CMAKE_SOURCE_DIR}/src/grammar/generated/NovaLexer.cpp
+        ${CMAKE_SOURCE_DIR}/src/grammar/generated/NovaParser.h
+        ${CMAKE_SOURCE_DIR}/src/grammar/generated/NovaParser.cpp
+        ${CMAKE_SOURCE_DIR}/src/grammar/generated/NovaBaseListener.h
+        ${CMAKE_SOURCE_DIR}/src/grammar/generated/NovaBaseListener.cpp
+        ${CMAKE_SOURCE_DIR}/src/grammar/generated/NovaListener.h
+        ${CMAKE_SOURCE_DIR}/src/grammar/generated/NovaListener.cpp
+        ${CMAKE_SOURCE_DIR}/src/grammar/generated/NovaBaseVisitor.h
+        ${CMAKE_SOURCE_DIR}/src/grammar/generated/NovaBaseVisitor.cpp
+        ${CMAKE_SOURCE_DIR}/src/grammar/generated/NovaVisitor.h
+        ${CMAKE_SOURCE_DIR}/src/grammar/generated/NovaVisitor.cpp
+    )
+endif()
 
 # ============================================
 # COMPILACIÓN DEL COMPILADOR
@@ -181,7 +193,7 @@ target_link_libraries(nova-lib
         LLVM
 )
 
-target_compile_features(nova-lib PRIVATE cxx_std_20)
+target_compile_features(nova-lib PRIVATE cxx_std_17)
 
 # Crear ejecutable del compilador
 add_executable(nova-compiler
@@ -195,7 +207,7 @@ target_link_libraries(nova-compiler
         LLVM
 )
 
-target_compile_features(nova-compiler PRIVATE cxx_std_20)
+target_compile_features(nova-compiler PRIVATE cxx_std_17)
 
 # ============================================
 # OPCIONES DE COMPILACIÓN
@@ -234,12 +246,12 @@ install(TARGETS nova-compiler nova-lib
     ARCHIVE DESTINATION lib
 )
 
-# Exportar para uso externo
-install(EXPORT NovaTargets
-    FILE NovaCompilerTargets.cmake
-    NAMESPACE Nova::
-    DESTINATION lib/cmake/Nova
-)
+# La exportación de targets se comenta temporalmente para entornos de desarrollo
+# install(EXPORT NovaTargets
+#     FILE NovaCompilerTargets.cmake
+#     NAMESPACE Nova::
+#     DESTINATION lib/cmake/Nova
+# )
 
 # ============================================
 # DOCUMENTACIÓN
@@ -271,7 +283,7 @@ message(STATUS "Configuración de Nova Language")
 message(STATUS "==================================")
 message(STATUS "LLVM Version:        ${LLVM_PACKAGE_VERSION}")
 message(STATUS "ANTLR4 Version:      4.13.1")
-message(STATUS "C++ Standard:        20")
+message(STATUS "C++ Standard:        17")
 message(STATUS "Build Type:          ${CMAKE_BUILD_TYPE}")
 message(STATUS "AST Sources:         ${NOVA_AST_SOURCES}")
 message(STATUS "SEMA Sources:        ${NOVA_SEMA_SOURCES}")

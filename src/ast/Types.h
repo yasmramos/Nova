@@ -765,6 +765,42 @@ private:
 };
 
 // ============================================
+// CONSTRAINTS (para generics y traits)
+// ============================================
+
+/**
+ * @enum ConstraintKind
+ * @brief Tipos de constraints en el sistema de tipos
+ */
+enum class ConstraintKind {
+    Trait,      // T: Trait
+    Lifetime,   // T: 'a
+    Type,       // T: type = DefaultType
+    Value       // T: value = DefaultValue
+};
+
+/**
+ * @class Constraint
+ * @brief Representa una constraint en un tipo genérico
+ * 
+ * Ejemplos: T: Display, T: Clone + Debug, T: 'a
+ */
+class Constraint {
+public:
+    explicit Constraint(ConstraintKind kind, const std::string& traitName = "")
+        : kind_(kind), traitName_(traitName) {}
+    
+    ConstraintKind getKind() const { return kind_; }
+    const std::string& getTraitName() const { return traitName_; }
+    
+    std::string toString() const;
+    
+private:
+    ConstraintKind kind_;
+    std::string traitName_;
+};
+
+// ============================================
 // CLASE TYPE CONTEXT (Contexto de tipos global)
 // ============================================
 

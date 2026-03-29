@@ -1,0 +1,1 @@
+/usr/bin/c++ "CMakeFiles/nova-compiler.dir/src/driver/main.cpp.o" -o nova-compiler  libnova-lib.a -lantlr4-runtime 

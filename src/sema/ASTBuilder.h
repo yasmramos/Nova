@@ -19,7 +19,7 @@
 #include <variant>
 #include <unordered_map>
 #include <stack>
-#include "antlr4-runtime.h"
+#include <any>
 #include "NovaBaseVisitor.h"
 #include "Node.h"
 #include "Types.h"
@@ -65,86 +65,139 @@ public:
     std::unique_ptr<ModuleNode> build(antlr4::CharStream* charStream);
     
     // === Visit methods (implementación de la interfaz visitor) ===
+    // Nota: Los nombres deben coincidir exactamente con los generados por ANTLR4
     
-    // Nota: Los métodos override exactos dependen de la gramática
-    // Esta es una implementación genérica que será completada
+    // Top-level
+    antlrcpp::Any visitSourceFile(NovaParser::SourceFileContext* ctx) override;
+    antlrcpp::Any visitModuleDeclaration(NovaParser::ModuleDeclarationContext* ctx) override;
+    antlrcpp::Any visitImportDeclaration(NovaParser::ImportDeclarationContext* ctx) override;
+    antlrcpp::Any visitTopLevelDeclaration(NovaParser::TopLevelDeclarationContext* ctx) override;
     
-    std::any visitSourceFile(NovaParser::SourceFileContext* ctx) override;
-    std::any visitModuleDeclaration(NovaParser::ModuleDeclarationContext* ctx) override;
-    std::any visitImportDeclaration(NovaParser::ImportDeclarationContext* ctx) override;
-    std::any visitTopLevelDeclaration(NovaParser::TopLevelDeclarationContext* ctx) override;
+    // Declaraciones de alto nivel
+    antlrcpp::Any visitFunctionDeclaration(NovaParser::FunctionDeclarationContext* ctx) override;
+    antlrcpp::Any visitStructDeclaration(NovaParser::StructDeclarationContext* ctx) override;
+    antlrcpp::Any visitEnumDeclaration(NovaParser::EnumDeclarationContext* ctx) override;
+    antlrcpp::Any visitTraitDeclaration(NovaParser::TraitDeclarationContext* ctx) override;
+    antlrcpp::Any visitImplDeclaration(NovaParser::ImplDeclarationContext* ctx) override;
+    antlrcpp::Any visitTypeAliasDeclaration(NovaParser::TypeAliasDeclarationContext* ctx) override;
+    antlrcpp::Any visitConstantDeclaration(NovaParser::ConstantDeclarationContext* ctx) override;
+    antlrcpp::Any visitExternDeclaration(NovaParser::ExternDeclarationContext* ctx) override;
     
-    // Declaraciones
-    std::any visitFunctionDeclaration(NovaParser::FunctionDeclarationContext* ctx) override;
-    std::any visitStructDeclaration(NovaParser::StructDeclarationContext* ctx) override;
-    std::any visitEnumDeclaration(NovaParser::EnumDeclarationContext* ctx) override;
-    std::any visitTraitDeclaration(NovaParser::TraitDeclarationContext* ctx) override;
-    std::any visitImplDeclaration(NovaParser::ImplDeclarationContext* ctx) override;
-    std::any visitTypeAliasDeclaration(NovaParser::TypeAliasDeclarationContext* ctx) override;
-    std::any visitConstantDeclaration(NovaParser::ConstantDeclarationContext* ctx) override;
+    // Miembros y campos
+    antlrcpp::Any visitStructField(NovaParser::StructFieldContext* ctx) override;
+    antlrcpp::Any visitTraitMethod(NovaParser::TraitMethodContext* ctx) override;
+    antlrcpp::Any visitFunctionSignature(NovaParser::FunctionSignatureContext* ctx) override;
+    antlrcpp::Any visitImplMember(NovaParser::ImplMemberContext* ctx) override;
+    antlrcpp::Any visitEnumVariant(NovaParser::EnumVariantContext* ctx) override;
+    antlrcpp::Any visitExternFunction(NovaParser::ExternFunctionContext* ctx) override;
+    
+    // Parámetros y tipos genéricos
+    antlrcpp::Any visitFunctionParameters(NovaParser::FunctionParametersContext* ctx) override;
+    antlrcpp::Any visitParameterList(NovaParser::ParameterListContext* ctx) override;
+    antlrcpp::Any visitParameter(NovaParser::ParameterContext* ctx) override;
+    antlrcpp::Any visitReturnType(NovaParser::ReturnTypeContext* ctx) override;
+    antlrcpp::Any visitTypeParameterList(NovaParser::TypeParameterListContext* ctx) override;
+    antlrcpp::Any visitTypeParameter(NovaParser::TypeParameterContext* ctx) override;
+    antlrcpp::Any visitConstraintList(NovaParser::ConstraintListContext* ctx) override;
+    antlrcpp::Any visitConstraint(NovaParser::ConstraintContext* ctx) override;
+    antlrcpp::Any visitIdentifierList(NovaParser::IdentifierListContext* ctx) override;
+    antlrcpp::Any visitLifetime(NovaParser::LifetimeContext* ctx) override;
+    
+    // Types
+    antlrcpp::Any visitType_(NovaParser::Type_Context* ctx) override;
+    antlrcpp::Any visitPrimitiveType(NovaParser::PrimitiveTypeContext* ctx) override;
+    antlrcpp::Any visitTypeReference(NovaParser::TypeReferenceContext* ctx) override;
+    antlrcpp::Any visitGenericType(NovaParser::GenericTypeContext* ctx) override;
+    antlrcpp::Any visitTypeList(NovaParser::TypeListContext* ctx) override;
+    antlrcpp::Any visitFunctionType(NovaParser::FunctionTypeContext* ctx) override;
+    antlrcpp::Any visitTupleType(NovaParser::TupleTypeContext* ctx) override;
+    antlrcpp::Any visitArrayType(NovaParser::ArrayTypeContext* ctx) override;
+    antlrcpp::Any visitReferenceType(NovaParser::ReferenceTypeContext* ctx) override;
+    antlrcpp::Any visitOwnershipType(NovaParser::OwnershipTypeContext* ctx) override;
     
     // Statements
-    std::any visitBlock(NovaParser::BlockContext* ctx) override;
-    std::any visitVariableDeclaration(NovaParser::VariableDeclarationContext* ctx) override;
-    std::any visitExpressionStatement(NovaParser::ExpressionStatementContext* ctx) override;
-    std::any visitAssignmentStatement(NovaParser::AssignmentStatementContext* ctx) override;
-    std::any visitIfStatement(NovaParser::IfStatementContext* ctx) override;
-    std::any visitLoopStatement(NovaParser::LoopStatementContext* ctx) override;
-    std::any visitMatchStatement(NovaParser::MatchStatementContext* ctx) override;
-    std::any visitReturnStatement(NovaParser::ReturnStatementContext* ctx) override;
-    std::any visitBreakStatement(NovaParser::BreakStatementContext* ctx) override;
-    std::any visitContinueStatement(NovaParser::ContinueStatementContext* ctx) override;
+    antlrcpp::Any visitStatement(NovaParser::StatementContext* ctx) override;
+    antlrcpp::Any visitDeclarationStatement(NovaParser::DeclarationStatementContext* ctx) override;
+    antlrcpp::Any visitBlock(NovaParser::BlockContext* ctx) override;
+    antlrcpp::Any visitVariableDeclaration(NovaParser::VariableDeclarationContext* ctx) override;
+    antlrcpp::Any visitExpressionStatement(NovaParser::ExpressionStatementContext* ctx) override;
+    antlrcpp::Any visitAssignmentStatement(NovaParser::AssignmentStatementContext* ctx) override;
+    antlrcpp::Any visitIfStatement(NovaParser::IfStatementContext* ctx) override;
+    antlrcpp::Any visitLoopStatement(NovaParser::LoopStatementContext* ctx) override;
+    antlrcpp::Any visitMatchStatement(NovaParser::MatchStatementContext* ctx) override;
+    antlrcpp::Any visitJumpStatement(NovaParser::JumpStatementContext* ctx) override;
     
-    // Expresiones
-    std::any visitExpression(NovaParser::ExpressionContext* ctx) override;
-    std::any visitLiteralExpression(NovaParser::LiteralExpressionContext* ctx) override;
-    std::any visitIdentifierExpression(NovaParser::IdentifierExpressionContext* ctx) override;
-    std::any visitBinaryExpr(NovaParser::BinaryExprContext* ctx) override;
-    std::any visitUnaryExpr(NovaParser::UnaryExprContext* ctx) override;
-    std::any visitCallExpr(NovaParser::CallExprContext* ctx) override;
-    std::any visitFieldExpr(NovaParser::FieldExprContext* ctx) override;
-    std::any visitTupleIndexExpr(NovaParser::TupleIndexExprContext* ctx) override;
-    std::any visitIfExpr(NovaParser::IfExprContext* ctx) override;
-    std::any visitMatchExpr(NovaParser::MatchExprContext* ctx) override;
-    std::any visitLoopExpr(NovaParser::LoopExprContext* ctx) override;
-    std::any visitRangeExpr(NovaParser::RangeExprContext* ctx) override;
-    std::any visitCastExpr(NovaParser::CastExprContext* ctx) override;
-    std::any visitLambdaExpr(NovaParser::LambdaExprContext* ctx) override;
-    std::any visitArrayExpression(NovaParser::ArrayExpressionContext* ctx) override;
-    std::any visitTupleExpression(NovaParser::TupleExpressionContext* ctx) override;
-    std::any visitStructExpression(NovaParser::StructExpressionContext* ctx) override;
-    std::any visitAwaitExpression(NovaParser::AwaitExpressionContext* ctx) override;
+    // Expressions - Primary
+    antlrcpp::Any visitExpression(NovaParser::ExpressionContext* ctx) override;
+    antlrcpp::Any visitPrimaryExpression(NovaParser::PrimaryExpressionContext* ctx) override;
+    antlrcpp::Any visitLiteralExpression(NovaParser::LiteralExpressionContext* ctx) override;
+    antlrcpp::Any visitIdentifierExpression(NovaParser::IdentifierExpressionContext* ctx) override;
+    antlrcpp::Any visitParenthesizedExpression(NovaParser::ParenthesizedExpressionContext* ctx) override;
     
-    // Tipos
-    std::any visitType(NovaParser::TypeContext* ctx) override;
-    std::any visitPrimitiveType(NovaParser::PrimitiveTypeContext* ctx) override;
-    std::any visitTypeReference(NovaParser::TypeReferenceContext* ctx) override;
-    std::any visitGenericType(NovaParser::GenericTypeContext* ctx) override;
-    std::any visitFunctionType(NovaParser::FunctionTypeContext* ctx) override;
-    std::any visitTupleType(NovaParser::TupleTypeContext* ctx) override;
-    std::any visitArrayType(NovaParser::ArrayTypeContext* ctx) override;
-    std::any visitReferenceType(NovaParser::ReferenceTypeContext* ctx) override;
+    // Expressions - Operators by precedence
+    antlrcpp::Any visitAssignmentExpression(NovaParser::AssignmentExpressionContext* ctx) override;
+    antlrcpp::Any visitLogicalExpression(NovaParser::LogicalExpressionContext* ctx) override;
+    antlrcpp::Any visitComparisonExpression(NovaParser::ComparisonExpressionContext* ctx) override;
+    antlrcpp::Any visitBitwiseExpression(NovaParser::BitwiseExpressionContext* ctx) override;
+    antlrcpp::Any visitArithmeticExpression(NovaParser::ArithmeticExpressionContext* ctx) override;
+    antlrcpp::Any visitTermExpression(NovaParser::TermExpressionContext* ctx) override;
+    antlrcpp::Any visitPowerExpression(NovaParser::PowerExpressionContext* ctx) override;
+    antlrcpp::Any visitUnaryExpression(NovaParser::UnaryExpressionContext* ctx) override;
+    antlrcpp::Any visitPostfixExpression(NovaParser::PostfixExpressionContext* ctx) override;
     
-    // Literales
-    std::any visitIntegerLiteral(NovaParser::IntegerLiteralContext* ctx) override;
-    std::any visitFloatLiteral(NovaParser::FloatLiteralContext* ctx) override;
-    std::any visitBooleanLiteral(NovaParser::BooleanLiteralContext* ctx) override;
-    std::any visitCharacterLiteral(NovaParser::CharacterLiteralContext* ctx) override;
-    std::any visitStringLiteral(NovaParser::StringLiteralContext* ctx) override;
+    // Specific expression types
+    antlrcpp::Any visitCallExpression(NovaParser::CallExpressionContext* ctx) override;
+    antlrcpp::Any visitArgumentList(NovaParser::ArgumentListContext* ctx) override;
+    antlrcpp::Any visitFieldExpression(NovaParser::FieldExpressionContext* ctx) override;
+    antlrcpp::Any visitIfExpression(NovaParser::IfExpressionContext* ctx) override;
+    antlrcpp::Any visitMatchExpression(NovaParser::MatchExpressionContext* ctx) override;
+    antlrcpp::Any visitLoopExpression(NovaParser::LoopExpressionContext* ctx) override;
+    antlrcpp::Any visitLambdaExpression(NovaParser::LambdaExpressionContext* ctx) override;
+    antlrcpp::Any visitArrayExpression(NovaParser::ArrayExpressionContext* ctx) override;
+    antlrcpp::Any visitTupleExpression(NovaParser::TupleExpressionContext* ctx) override;
+    antlrcpp::Any visitStructExpression(NovaParser::StructExpressionContext* ctx) override;
+    antlrcpp::Any visitFieldInitializer(NovaParser::FieldInitializerContext* ctx) override;
+    antlrcpp::Any visitEnumVariantExpression(NovaParser::EnumVariantExpressionContext* ctx) override;
+    antlrcpp::Any visitCompoundAssignmentExpression(NovaParser::CompoundAssignmentExpressionContext* ctx) override;
+    antlrcpp::Any visitCompoundAssignmentOperator(NovaParser::CompoundAssignmentOperatorContext* ctx) override;
+    antlrcpp::Any visitAwaitExpression(NovaParser::AwaitExpressionContext* ctx) override;
+    antlrcpp::Any visitUnsafeExpression(NovaParser::UnsafeExpressionContext* ctx) override;
+    antlrcpp::Any visitBlockExpression(NovaParser::BlockExpressionContext* ctx) override;
     
-    // Patrones
-    std::any visitPattern(NovaParser::PatternContext* ctx) override;
-    std::any visitIdentifierPattern(NovaParser::IdentifierPatternContext* ctx) override;
-    std::any visitTuplePattern(NovaParser::TuplePatternContext* ctx) override;
-    std::any visitStructPattern(NovaParser::StructPatternContext* ctx) override;
-    std::any visitWildcardPattern(NovaParser::WildcardPatternContext* ctx) override;
+    // Control flow blocks
+    antlrcpp::Any visitCondition(NovaParser::ConditionContext* ctx) override;
+    antlrcpp::Any visitLetCondition(NovaParser::LetConditionContext* ctx) override;
+    antlrcpp::Any visitLoopBlock(NovaParser::LoopBlockContext* ctx) override;
+    antlrcpp::Any visitWhileBlock(NovaParser::WhileBlockContext* ctx) override;
+    antlrcpp::Any visitForBlock(NovaParser::ForBlockContext* ctx) override;
     
-    // Parámetros
-    std::any visitParameter(NovaParser::ParameterContext* ctx) override;
-    std::any visitFunctionParameters(NovaParser::FunctionParametersContext* ctx) override;
+    // Jump expressions
+    antlrcpp::Any visitReturnExpression(NovaParser::ReturnExpressionContext* ctx) override;
+    antlrcpp::Any visitBreakExpression(NovaParser::BreakExpressionContext* ctx) override;
+    antlrcpp::Any visitContinueExpression(NovaParser::ContinueExpressionContext* ctx) override;
+    
+    // Literals
+    antlrcpp::Any visitIntegerLiteral(NovaParser::IntegerLiteralContext* ctx) override;
+    antlrcpp::Any visitFloatLiteral(NovaParser::FloatLiteralContext* ctx) override;
+    antlrcpp::Any visitBooleanLiteral(NovaParser::BooleanLiteralContext* ctx) override;
+    antlrcpp::Any visitCharacterLiteral(NovaParser::CharacterLiteralContext* ctx) override;
+    antlrcpp::Any visitStringLiteral(NovaParser::StringLiteralContext* ctx) override;
+    antlrcpp::Any visitNullLiteral(NovaParser::NullLiteralContext* ctx) override;
+    
+    // Patterns
+    antlrcpp::Any visitPattern(NovaParser::PatternContext* ctx) override;
+    antlrcpp::Any visitIdentifierPattern(NovaParser::IdentifierPatternContext* ctx) override;
+    antlrcpp::Any visitTuplePattern(NovaParser::TuplePatternContext* ctx) override;
+    antlrcpp::Any visitStructPattern(NovaParser::StructPatternContext* ctx) override;
+    antlrcpp::Any visitWildcardPattern(NovaParser::WildcardPatternContext* ctx) override;
     
     // Match arms
-    std::any visitMatchArm(NovaParser::MatchArmContext* ctx) override;
+    antlrcpp::Any visitMatchArm(NovaParser::MatchArmContext* ctx) override;
+    
+    // Utils
+    antlrcpp::Any visitVisibility(NovaParser::VisibilityContext* ctx) override;
+    antlrcpp::Any visitQualifiedName(NovaParser::QualifiedNameContext* ctx) override;
+    antlrcpp::Any visitIdentifier(NovaParser::IdentifierContext* ctx) override;
     
 protected:
     // Métodos helper
@@ -162,7 +215,7 @@ protected:
     /**
      * @brief Convierte un tipo del parser a tipo del sistema
      */
-    Type* convertType(NovaParser::TypeContext* ctx);
+    Type* convertType(NovaParser::Type_Context* ctx);
     
     /**
      * @brief Convierte un path de la gramática a Path del sistema
@@ -201,23 +254,22 @@ private:
  * 
  * Útil para debugging y para el flag --dump-ast del compilador
  */
-class ASTDumper : public NodeVisitor {
+class ASTDumper {
 public:
     ASTDumper(std::ostream& os) : os_(os), indent_(0) {}
     
     void dump(ModuleNode* module);
-    
-    void visitModule(ModuleNode* node) override;
-    void visitFunctionDecl(FunctionDeclNode* node) override;
-    void visitStructDecl(StructType* node) override;
-    void visitEnumDecl(EnumType* node) override;
-    void visitLetDecl(LetDeclNode* node) override;
-    void visitBinaryExpr(BinaryExprNode* node) override;
-    void visitUnaryExpr(UnaryExprNode* node) override;
-    void visitCallExpr(CallExprNode* node) override;
-    void visitIfExpr(IfExprNode* node) override;
-    void visitLiteral(LiteralNode* node) override;
-    void visitIdentifier(IdentifierNode* node) override;
+    void visitModule(ModuleNode* node);
+    void visitFunctionDecl(FunctionDeclNode* node);
+    void visitStructDecl(StructType* node);
+    void visitEnumDecl(EnumType* node);
+    void visitLetDecl(LetDeclNode* node);
+    void visitBinaryExpr(BinaryExprNode* node);
+    void visitUnaryExpr(UnaryExprNode* node);
+    void visitCallExpr(CallExprNode* node);
+    void visitIfExpr(IfExprNode* node);
+    void visitLiteral(LiteralNode* node);
+    void visitIdentifier(IdentifierNode* node);
     
 private:
     std::ostream& os_;

@@ -50,8 +50,7 @@ std::string Symbol::getMangledName() const {
             oss << "_Zi" << name.size() << name;
     }
     
-    mangledName = oss.str();
-    return mangledName;
+    return oss.str();
 }
 
 // ============================================
