@@ -5,7 +5,6 @@
  */
 
 #include "ASTBuilder.h"
-#include "antlr4-runtime.h"
 #include "NovaParser.h"
 #include "NovaLexer.h"
 #include <sstream>
@@ -24,8 +23,9 @@ ASTBuilder::ASTBuilder(ErrorHandler& errorHandler, TypeContext& typeContext)
 std::unique_ptr<ModuleNode> ASTBuilder::build(antlr4::ANTLRInputStream* inputStream) {
     // Crear el lexer
     NovaLexer lexer(inputStream);
+    NovaErrorListener errorListener(errorHandler_);
     lexer.removeErrorListeners();
-    lexer.addErrorListener(&errorHandler_);
+    lexer.addErrorListener(&errorListener);
     
     // Crear el token stream
     antlr4::CommonTokenStream tokens(&lexer);
@@ -34,7 +34,7 @@ std::unique_ptr<ModuleNode> ASTBuilder::build(antlr4::ANTLRInputStream* inputStr
     // Crear el parser
     NovaParser parser(&tokens);
     parser.removeErrorListeners();
-    parser.addErrorListener(&errorHandler_);
+    parser.addErrorListener(&errorListener);
     
     // Parsear el archivo fuente
     auto* tree = parser.sourceFile();
@@ -47,29 +47,29 @@ std::unique_ptr<ModuleNode> ASTBuilder::build(antlr4::ANTLRInputStream* inputStr
     
     // Construir el AST
     auto result = visitSourceFile(tree);
-    if (result.has_value()) {
-        return std::any_cast<std::unique_ptr<ModuleNode>>(result);
+    if (!result.isEmpty()) {
+        return result.as<std::unique_ptr<ModuleNode>>();
     }
     
     return nullptr;
 }
 
 std::unique_ptr<ModuleNode> ASTBuilder::build(antlr4::CharStream* charStream) {
-    antlr4::ANTLRInputStream input(charStream);
-    return build(&input);
+    auto input = std::make_unique<antlr4::ANTLRInputStream>(charStream->getSourceName().c_str(), static_cast<size_t>(charStream->getSourceName().size()));
+    return build(input.get());
 }
 
 // ============================================
 // VISIT - ELEMENTOS DE NIVEL SUPERIOR
 // ============================================
 
-std::any ASTBuilder::visitSourceFile(NovaParser::SourceFileContext* ctx) {
+antlrcpp::Any ASTBuilder::visitSourceFile(NovaParser::SourceFileContext* ctx) {
     auto module = std::make_unique<ModuleNode>(createSourceLocation(ctx));
     
     // Procesar módulo si existe
     if (ctx->moduleDeclaration()) {
         auto result = visit(ctx->moduleDeclaration());
-        if (result.has_value()) {
+        if (!result.isEmpty()) {
             // module name se procesa aquí
         }
     }
@@ -83,25 +83,25 @@ std::any ASTBuilder::visitSourceFile(NovaParser::SourceFileContext* ctx) {
     // Procesar declaraciones de nivel superior
     for (auto* declCtx : ctx->topLevelDeclaration()) {
         auto result = visit(declCtx);
-        if (result.has_value()) {
+        if (!result.isEmpty()) {
             // El resultado puede ser una declaración
         }
     }
     
-    module->setEndLocation(createSourceLocation(ctx->getStop()));
+    module->setEndLocation(createSourceLocation(ctx));
     return module;
 }
 
-std::any ASTBuilder::visitModuleDeclaration(NovaParser::ModuleDeclarationContext* ctx) {
+antlrcpp::Any ASTBuilder::visitModuleDeclaration(NovaParser::ModuleDeclarationContext* ctx) {
     // Módulo: 'module' qualifiedName ';'
     if (ctx->qualifiedName()) {
         auto path = convertPath(ctx->qualifiedName());
         return path;
     }
-    return std::any();
+    return antlrcpp::Any();
 }
 
-std::any ASTBuilder::visitImportDeclaration(NovaParser::ImportDeclarationContext* ctx) {
+antlrcpp::Any ASTBuilder::visitImportDeclaration(NovaParser::ImportDeclarationContext* ctx) {
     // Import: 'import' qualifiedName ('as' identifier)? ';'
     // Use: 'use' qualifiedName ';'
     
@@ -119,7 +119,7 @@ std::any ASTBuilder::visitImportDeclaration(NovaParser::ImportDeclarationContext
     return importNode;
 }
 
-std::any ASTBuilder::visitTopLevelDeclaration(NovaParser::TopLevelDeclarationContext* ctx) {
+antlrcpp::Any ASTBuilder::visitTopLevelDeclaration(NovaParser::TopLevelDeclarationContext* ctx) {
     // Delegar al tipo específico de declaración
     if (ctx->functionDeclaration()) {
         return visit(ctx->functionDeclaration());
@@ -139,14 +139,14 @@ std::any ASTBuilder::visitTopLevelDeclaration(NovaParser::TopLevelDeclarationCon
         return visit(ctx->externDeclaration());
     }
     
-    return std::any();
+    return antlrcpp::Any();
 }
 
 // ============================================
 // VISIT - DECLARACIONES
 // ============================================
 
-std::any ASTBuilder::visitFunctionDeclaration(NovaParser::FunctionDeclarationContext* ctx) {
+antlrcpp::Any ASTBuilder::visitFunctionDeclaration(NovaParser::FunctionDeclarationContext* ctx) {
     auto funcNode = std::make_unique<FunctionDeclNode>(createSourceLocation(ctx));
     
     // Nombre de la función
@@ -172,16 +172,16 @@ std::any ASTBuilder::visitFunctionDeclaration(NovaParser::FunctionDeclarationCon
     // Cuerpo
     if (ctx->block()) {
         auto result = visit(ctx->block());
-        if (result.has_value()) {
-            funcNode->setBody(std::any_cast<std::unique_ptr<Node>>(result));
+        if (!result.isEmpty()) {
+            funcNode->setBody(antlrcpp::Any_cast<std::unique_ptr<Node>>(result));
         }
     }
     
-    funcNode->setEndLocation(createSourceLocation(ctx->getStop()));
+    funcNode->setEndLocation(createSourceLocation(ctx));
     return funcNode;
 }
 
-std::any ASTBuilder::visitStructDeclaration(NovaParser::StructDeclarationContext* ctx) {
+antlrcpp::Any ASTBuilder::visitStructDeclaration(NovaParser::StructDeclarationContext* ctx) {
     // Crear el tipo struct
     std::string name = ctx->identifier()->getText();
     StructType* structType = typeContext_.registerStruct(name);
@@ -206,7 +206,7 @@ std::any ASTBuilder::visitStructDeclaration(NovaParser::StructDeclarationContext
     return declNode;
 }
 
-std::any ASTBuilder::visitEnumDeclaration(NovaParser::EnumDeclarationContext* ctx) {
+antlrcpp::Any ASTBuilder::visitEnumDeclaration(NovaParser::EnumDeclarationContext* ctx) {
     // Crear el tipo enum
     std::string name = ctx->identifier()->getText();
     EnumType* enumType = typeContext_.registerEnum(name);
@@ -231,7 +231,7 @@ std::any ASTBuilder::visitEnumDeclaration(NovaParser::EnumDeclarationContext* ct
     return declNode;
 }
 
-std::any ASTBuilder::visitTraitDeclaration(NovaParser::TraitDeclarationContext* ctx) {
+antlrcpp::Any ASTBuilder::visitTraitDeclaration(NovaParser::TraitDeclarationContext* ctx) {
     auto traitNode = std::make_unique<TraitDeclNode>(createSourceLocation(ctx));
     
     if (ctx->identifier()) {
@@ -246,7 +246,7 @@ std::any ASTBuilder::visitTraitDeclaration(NovaParser::TraitDeclarationContext* 
     return traitNode;
 }
 
-std::any ASTBuilder::visitImplDeclaration(NovaParser::ImplDeclarationContext* ctx) {
+antlrcpp::Any ASTBuilder::visitImplDeclaration(NovaParser::ImplDeclarationContext* ctx) {
     auto implNode = std::make_unique<ImplDeclNode>(createSourceLocation(ctx));
     
     // Procesar miembros de la implementación
@@ -257,7 +257,7 @@ std::any ASTBuilder::visitImplDeclaration(NovaParser::ImplDeclarationContext* ct
     return implNode;
 }
 
-std::any ASTBuilder::visitTypeAliasDeclaration(NovaParser::TypeAliasDeclarationContext* ctx) {
+antlrcpp::Any ASTBuilder::visitTypeAliasDeclaration(NovaParser::TypeAliasDeclarationContext* ctx) {
     std::string name = ctx->identifier()->getText();
     Type* underlying = convertType(ctx->type_());
     
@@ -269,7 +269,7 @@ std::any ASTBuilder::visitTypeAliasDeclaration(NovaParser::TypeAliasDeclarationC
     return declNode;
 }
 
-std::any ASTBuilder::visitConstantDeclaration(NovaParser::ConstantDeclarationContext* ctx) {
+antlrcpp::Any ASTBuilder::visitConstantDeclaration(NovaParser::ConstantDeclarationContext* ctx) {
     auto constNode = std::make_unique<ConstDeclNode>(createSourceLocation(ctx));
     
     // Nombre
@@ -286,7 +286,7 @@ std::any ASTBuilder::visitConstantDeclaration(NovaParser::ConstantDeclarationCon
     // Valor inicial
     if (ctx->expression()) {
         auto result = visit(ctx->expression());
-        if (result.has_value()) {
+        if (!result.isEmpty()) {
             // setInitializer(...)
         }
     }
@@ -298,7 +298,7 @@ std::any ASTBuilder::visitConstantDeclaration(NovaParser::ConstantDeclarationCon
 // VISIT - STATEMENTS
 // ============================================
 
-std::any ASTBuilder::visitBlock(NovaParser::BlockContext* ctx) {
+antlrcpp::Any ASTBuilder::visitBlock(NovaParser::BlockContext* ctx) {
     auto blockNode = std::make_unique<BlockNode>(createSourceLocation(ctx));
     
     // Procesar statements y expresión final
@@ -311,11 +311,11 @@ std::any ASTBuilder::visitBlock(NovaParser::BlockContext* ctx) {
         visit(ctx->expression());
     }
     
-    blockNode->setEndLocation(createSourceLocation(ctx->getStop()));
+    blockNode->setEndLocation(createSourceLocation(ctx));
     return blockNode;
 }
 
-std::any ASTBuilder::visitVariableDeclaration(NovaParser::VariableDeclarationContext* ctx) {
+antlrcpp::Any ASTBuilder::visitVariableDeclaration(NovaParser::VariableDeclarationContext* ctx) {
     auto letNode = std::make_unique<LetDeclNode>(createSourceLocation(ctx));
     
     // Mutabilidad
@@ -336,7 +336,7 @@ std::any ASTBuilder::visitVariableDeclaration(NovaParser::VariableDeclarationCon
     // Inicializador
     if (ctx->expression()) {
         auto result = visit(ctx->expression());
-        if (result.has_value()) {
+        if (!result.isEmpty()) {
             // letNode->setInitializer(...);
         }
     }
@@ -344,20 +344,20 @@ std::any ASTBuilder::visitVariableDeclaration(NovaParser::VariableDeclarationCon
     return letNode;
 }
 
-std::any ASTBuilder::visitExpressionStatement(NovaParser::ExpressionStatementContext* ctx) {
+antlrcpp::Any ASTBuilder::visitExpressionStatement(NovaParser::ExpressionStatementContext* ctx) {
     if (ctx->expression()) {
         auto result = visit(ctx->expression());
-        if (result.has_value()) {
-            auto expr = std::any_cast<std::unique_ptr<Expression>>(result);
+        if (!result.isEmpty()) {
+            auto expr = antlrcpp::Any_cast<std::unique_ptr<Expression>>(result);
             auto stmt = std::make_unique<ExprStmtNode>(createSourceLocation(ctx));
             // stmt->setExpression(std::move(expr));
             return stmt;
         }
     }
-    return std::any();
+    return antlrcpp::Any();
 }
 
-std::any ASTBuilder::visitAssignmentStatement(NovaParser::AssignmentStatementContext* ctx) {
+antlrcpp::Any ASTBuilder::visitAssignmentStatement(NovaParser::AssignmentStatementContext* ctx) {
     auto assignNode = std::make_unique<AssignStmtNode>(createSourceLocation(ctx));
     
     // LHS
@@ -373,7 +373,7 @@ std::any ASTBuilder::visitAssignmentStatement(NovaParser::AssignmentStatementCon
     return assignNode;
 }
 
-std::any ASTBuilder::visitIfStatement(NovaParser::IfStatementContext* ctx) {
+antlrcpp::Any ASTBuilder::visitIfStatement(NovaParser::IfStatementContext* ctx) {
     auto ifNode = std::make_unique<IfStmtNode>(createSourceLocation(ctx));
     
     // Condición
@@ -399,7 +399,7 @@ std::any ASTBuilder::visitIfStatement(NovaParser::IfStatementContext* ctx) {
     return ifNode;
 }
 
-std::any ASTBuilder::visitLoopStatement(NovaParser::LoopStatementContext* ctx) {
+antlrcpp::Any ASTBuilder::visitLoopStatement(NovaParser::LoopStatementContext* ctx) {
     if (ctx->loopBlock()) {
         return visit(ctx->loopBlock());
     } else if (ctx->whileBlock()) {
@@ -407,10 +407,10 @@ std::any ASTBuilder::visitLoopStatement(NovaParser::LoopStatementContext* ctx) {
     } else if (ctx->forBlock()) {
         return visit(ctx->forBlock());
     }
-    return std::any();
+    return antlrcpp::Any();
 }
 
-std::any ASTBuilder::visitMatchStatement(NovaParser::MatchStatementContext* ctx) {
+antlrcpp::Any ASTBuilder::visitMatchStatement(NovaParser::MatchStatementContext* ctx) {
     auto matchNode = std::make_unique<MatchStmtNode>(createSourceLocation(ctx));
     
     // Expresión a evaluar
@@ -426,12 +426,12 @@ std::any ASTBuilder::visitMatchStatement(NovaParser::MatchStatementContext* ctx)
     return matchNode;
 }
 
-std::any ASTBuilder::visitReturnStatement(NovaParser::ReturnStatementContext* ctx) {
+antlrcpp::Any ASTBuilder::visitReturnExpression(NovaParser::ReturnExpressionContext* ctx) {
     auto returnNode = std::make_unique<ReturnStmtNode>(createSourceLocation(ctx));
     
     if (ctx->expression()) {
         auto result = visit(ctx->expression());
-        if (result.has_value()) {
+        if (!result.isEmpty()) {
             // returnNode->setValue(...);
         }
     }
@@ -439,7 +439,7 @@ std::any ASTBuilder::visitReturnStatement(NovaParser::ReturnStatementContext* ct
     return returnNode;
 }
 
-std::any ASTBuilder::visitBreakStatement(NovaParser::BreakStatementContext* ctx) {
+antlrcpp::Any ASTBuilder::visitBreakExpression(NovaParser::BreakExpressionContext* ctx) {
     auto breakNode = std::make_unique<BreakStmtNode>(createSourceLocation(ctx));
     
     if (ctx->expression()) {
@@ -449,7 +449,7 @@ std::any ASTBuilder::visitBreakStatement(NovaParser::BreakStatementContext* ctx)
     return breakNode;
 }
 
-std::any ASTBuilder::visitContinueStatement(NovaParser::ContinueStatementContext* ctx) {
+antlrcpp::Any ASTBuilder::visitContinueExpression(NovaParser::ContinueExpressionContext* ctx) {
     return std::make_unique<ContinueStmtNode>(createSourceLocation(ctx));
 }
 
@@ -457,7 +457,7 @@ std::any ASTBuilder::visitContinueStatement(NovaParser::ContinueStatementContext
 // VISIT - EXPRESIONES
 // ============================================
 
-std::any ASTBuilder::visitExpression(NovaParser::ExpressionContext* ctx) {
+antlrcpp::Any ASTBuilder::visitExpression(NovaParser::ExpressionContext* ctx) {
     // El parser puede devolver diferentes tipos de expresiones
     // delegar al método específico
     if (ctx->literalExpression()) {
@@ -478,10 +478,10 @@ std::any ASTBuilder::visitExpression(NovaParser::ExpressionContext* ctx) {
         return visit(ctx->parenthesizedExpression()->expression());
     }
     
-    return std::any();
+    return antlrcpp::Any();
 }
 
-std::any ASTBuilder::visitLiteralExpression(NovaParser::LiteralExpressionContext* ctx) {
+antlrcpp::Any ASTBuilder::visitLiteralExpression(NovaParser::LiteralExpressionContext* ctx) {
     if (ctx->integerLiteral()) {
         return visit(ctx->integerLiteral());
     } else if (ctx->floatLiteral()) {
@@ -495,10 +495,10 @@ std::any ASTBuilder::visitLiteralExpression(NovaParser::LiteralExpressionContext
     } else if (ctx->nullLiteral()) {
         return visitNullLiteral(nullptr);
     }
-    return std::any();
+    return antlrcpp::Any();
 }
 
-std::any ASTBuilder::visitIdentifierExpression(NovaParser::IdentifierExpressionContext* ctx) {
+antlrcpp::Any ASTBuilder::visitIdentifierExpression(NovaParser::IdentifierExpressionContext* ctx) {
     auto identNode = std::make_unique<IdentifierNode>(
         ctx->identifier()->getText(),
         createSourceLocation(ctx)
@@ -507,7 +507,7 @@ std::any ASTBuilder::visitIdentifierExpression(NovaParser::IdentifierExpressionC
     return identNode;
 }
 
-std::any ASTBuilder::visitBinaryExpr(NovaParser::BinaryExprContext* ctx) {
+antlrcpp::Any ASTBuilder::visitArithmeticExpression(NovaParser::ArithmeticExpressionContext* ctx) {
     auto binNode = std::make_unique<BinaryExprNode>(createSourceLocation(ctx));
     
     // Operador
@@ -521,7 +521,7 @@ std::any ASTBuilder::visitBinaryExpr(NovaParser::BinaryExprContext* ctx) {
     // Operando izquierdo
     if (ctx->expression(0)) {
         auto result = visit(ctx->expression(0));
-        if (result.has_value()) {
+        if (!result.isEmpty()) {
             // binNode->setLeft(...);
         }
     }
@@ -529,7 +529,7 @@ std::any ASTBuilder::visitBinaryExpr(NovaParser::BinaryExprContext* ctx) {
     // Operando derecho
     if (ctx->expression(1)) {
         auto result = visit(ctx->expression(1));
-        if (result.has_value()) {
+        if (!result.isEmpty()) {
             // binNode->setRight(...);
         }
     }
@@ -537,7 +537,7 @@ std::any ASTBuilder::visitBinaryExpr(NovaParser::BinaryExprContext* ctx) {
     return binNode;
 }
 
-std::any ASTBuilder::visitUnaryExpr(NovaParser::UnaryExprContext* ctx) {
+antlrcpp::Any ASTBuilder::visitUnaryExpression(NovaParser::UnaryExpressionContext* ctx) {
     auto unaryNode = std::make_unique<UnaryExprNode>(createSourceLocation(ctx));
     
     // Operador
@@ -549,7 +549,7 @@ std::any ASTBuilder::visitUnaryExpr(NovaParser::UnaryExprContext* ctx) {
     // Operando
     if (ctx->expression()) {
         auto result = visit(ctx->expression());
-        if (result.has_value()) {
+        if (!result.isEmpty()) {
             // unaryNode->setOperand(...);
         }
     }
@@ -557,13 +557,13 @@ std::any ASTBuilder::visitUnaryExpr(NovaParser::UnaryExprContext* ctx) {
     return unaryNode;
 }
 
-std::any ASTBuilder::visitCallExpr(NovaParser::CallExprContext* ctx) {
+antlrcpp::Any ASTBuilder::visitCallExpression(NovaParser::CallExpressionContext* ctx) {
     auto callNode = std::make_unique<CallExprNode>(createSourceLocation(ctx));
     
     // Función llamada
     if (ctx->expression()) {
         auto result = visit(ctx->expression());
-        if (result.has_value()) {
+        if (!result.isEmpty()) {
             // callNode->setFunction(...);
         }
     }
@@ -572,7 +572,7 @@ std::any ASTBuilder::visitCallExpr(NovaParser::CallExprContext* ctx) {
     if (ctx->argumentList()) {
         for (auto* argCtx : ctx->argumentList()->expression()) {
             auto result = visit(argCtx);
-            if (result.has_value()) {
+            if (!result.isEmpty()) {
                 // callNode->addArgument(...);
             }
         }
@@ -581,7 +581,7 @@ std::any ASTBuilder::visitCallExpr(NovaParser::CallExprContext* ctx) {
     return callNode;
 }
 
-std::any ASTBuilder::visitFieldExpr(NovaParser::FieldExprContext* ctx) {
+antlrcpp::Any ASTBuilder::visitFieldExpression(NovaParser::FieldExpressionContext* ctx) {
     // expression '.' identifier
     auto fieldNode = std::make_unique<FieldExprNode>(createSourceLocation(ctx));
     
@@ -598,7 +598,7 @@ std::any ASTBuilder::visitFieldExpr(NovaParser::FieldExprContext* ctx) {
     return fieldNode;
 }
 
-std::any ASTBuilder::visitTupleIndexExpr(NovaParser::TupleIndexExprContext* ctx) {
+antlrcpp::Any ASTBuilder::visitFieldExpression(NovaParser::FieldExpressionContext* ctx) {
     // expression '.' DecimalLiteral
     auto indexNode = std::make_unique<TupleIndexExprNode>(createSourceLocation(ctx));
     
@@ -613,7 +613,7 @@ std::any ASTBuilder::visitTupleIndexExpr(NovaParser::TupleIndexExprContext* ctx)
     return indexNode;
 }
 
-std::any ASTBuilder::visitIfExpr(NovaParser::IfExprContext* ctx) {
+antlrcpp::Any ASTBuilder::visitIfExpression(NovaParser::IfExpressionContext* ctx) {
     auto ifNode = std::make_unique<IfExprNode>(createSourceLocation(ctx));
     
     // Condición
@@ -638,7 +638,7 @@ std::any ASTBuilder::visitIfExpr(NovaParser::IfExprContext* ctx) {
     return ifNode;
 }
 
-std::any ASTBuilder::visitMatchExpr(NovaParser::MatchExprContext* ctx) {
+antlrcpp::Any ASTBuilder::visitMatchExpression(NovaParser::MatchExpressionContext* ctx) {
     auto matchNode = std::make_unique<MatchExprNode>(createSourceLocation(ctx));
     
     // Expresión a evaluar
@@ -654,14 +654,14 @@ std::any ASTBuilder::visitMatchExpr(NovaParser::MatchExprContext* ctx) {
     return matchNode;
 }
 
-std::any ASTBuilder::visitLoopExpr(NovaParser::LoopExprContext* ctx) {
+antlrcpp::Any ASTBuilder::visitLoopExpression(NovaParser::LoopExpressionContext* ctx) {
     if (ctx->loopBlock()) {
         return visit(ctx->loopBlock());
     }
-    return std::any();
+    return antlrcpp::Any();
 }
 
-std::any ASTBuilder::visitRangeExpr(NovaParser::RangeExprContext* ctx) {
+antlrcpp::Any ASTBuilder::visitBlockExpression(NovaParser::BlockExpressionContext* ctx) {
     auto rangeNode = std::make_unique<RangeExprNode>(createSourceLocation(ctx));
     
     if (ctx->expression(0)) {
@@ -675,7 +675,7 @@ std::any ASTBuilder::visitRangeExpr(NovaParser::RangeExprContext* ctx) {
     return rangeNode;
 }
 
-std::any ASTBuilder::visitCastExpr(NovaParser::CastExprContext* ctx) {
+antlrcpp::Any ASTBuilder::visitPostfixExpression(NovaParser::PostfixExpressionContext* ctx) {
     auto castNode = std::make_unique<CastExprNode>(createSourceLocation(ctx));
     
     if (ctx->expression()) {
@@ -690,7 +690,7 @@ std::any ASTBuilder::visitCastExpr(NovaParser::CastExprContext* ctx) {
     return castNode;
 }
 
-std::any ASTBuilder::visitLambdaExpr(NovaParser::LambdaExprContext* ctx) {
+antlrcpp::Any ASTBuilder::visitLambdaExpression(NovaParser::LambdaExpressionContext* ctx) {
     auto lambdaNode = std::make_unique<LambdaExprNode>(createSourceLocation(ctx));
     
     // Parámetros
@@ -714,7 +714,7 @@ std::any ASTBuilder::visitLambdaExpr(NovaParser::LambdaExprContext* ctx) {
     return lambdaNode;
 }
 
-std::any ASTBuilder::visitArrayExpression(NovaParser::ArrayExpressionContext* ctx) {
+antlrcpp::Any ASTBuilder::visitArrayExpression(NovaParser::ArrayExpressionContext* ctx) {
     auto arrayNode = std::make_unique<ArrayExprNode>(createSourceLocation(ctx));
     
     for (auto* exprCtx : ctx->expression()) {
@@ -724,7 +724,7 @@ std::any ASTBuilder::visitArrayExpression(NovaParser::ArrayExpressionContext* ct
     return arrayNode;
 }
 
-std::any ASTBuilder::visitTupleExpression(NovaParser::TupleExpressionContext* ctx) {
+antlrcpp::Any ASTBuilder::visitTupleExpression(NovaParser::TupleExpressionContext* ctx) {
     auto tupleNode = std::make_unique<TupleExprNode>(createSourceLocation(ctx));
     
     for (auto* exprCtx : ctx->expression()) {
@@ -734,7 +734,7 @@ std::any ASTBuilder::visitTupleExpression(NovaParser::TupleExpressionContext* ct
     return tupleNode;
 }
 
-std::any ASTBuilder::visitStructExpression(NovaParser::StructExpressionContext* ctx) {
+antlrcpp::Any ASTBuilder::visitStructExpression(NovaParser::StructExpressionContext* ctx) {
     auto structNode = std::make_unique<StructExprNode>(createSourceLocation(ctx));
     
     if (ctx->typeReference()) {
@@ -751,7 +751,7 @@ std::any ASTBuilder::visitStructExpression(NovaParser::StructExpressionContext* 
     return structNode;
 }
 
-std::any ASTBuilder::visitAwaitExpression(NovaParser::AwaitExpressionContext* ctx) {
+antlrcpp::Any ASTBuilder::visitAwaitExpression(NovaParser::AwaitExpressionContext* ctx) {
     auto awaitNode = std::make_unique<AwaitExprNode>(createSourceLocation(ctx));
     
     if (ctx->expression()) {
@@ -765,7 +765,7 @@ std::any ASTBuilder::visitAwaitExpression(NovaParser::AwaitExpressionContext* ct
 // VISIT - TIPOS
 // ============================================
 
-std::any ASTBuilder::visitType(NovaParser::TypeContext* ctx) {
+antlrcpp::Any ASTBuilder::visitType_(NovaParser::Type_Context* ctx) {
     Type* type = nullptr;
     
     if (ctx->primitiveType()) {
@@ -787,7 +787,7 @@ std::any ASTBuilder::visitType(NovaParser::TypeContext* ctx) {
     return type;
 }
 
-std::any ASTBuilder::visitPrimitiveType(NovaParser::PrimitiveTypeContext* ctx) {
+antlrcpp::Any ASTBuilder::visitPrimitiveType(NovaParser::PrimitiveTypeContext* ctx) {
     std::string typeName = ctx->getText();
     
     if (typeName == "void") return static_cast<Type*>(typeContext_.getVoidType());
@@ -811,7 +811,7 @@ std::any ASTBuilder::visitPrimitiveType(NovaParser::PrimitiveTypeContext* ctx) {
     return static_cast<Type*>(typeContext_.getErrorType());
 }
 
-std::any ASTBuilder::visitTypeReference(NovaParser::TypeReferenceContext* ctx) {
+antlrcpp::Any ASTBuilder::visitTypeReference(NovaParser::TypeReferenceContext* ctx) {
     Path path = convertPath(ctx->qualifiedName());
     
     // Buscar en el contexto de tipos
@@ -824,7 +824,7 @@ std::any ASTBuilder::visitTypeReference(NovaParser::TypeReferenceContext* ctx) {
     return static_cast<Type*>(typeContext_.getGenericType(path.toString()));
 }
 
-std::any ASTBuilder::visitGenericType(NovaParser::GenericTypeContext* ctx) {
+antlrcpp::Any ASTBuilder::visitGenericType(NovaParser::GenericTypeContext* ctx) {
     // typeReference '<' typeList '>'
     
     Type* baseType = convertType(ctx->typeReference());
@@ -841,7 +841,7 @@ std::any ASTBuilder::visitGenericType(NovaParser::GenericTypeContext* ctx) {
     return baseType;
 }
 
-std::any ASTBuilder::visitFunctionType(NovaParser::FunctionTypeContext* ctx) {
+antlrcpp::Any ASTBuilder::visitFunctionType(NovaParser::FunctionTypeContext* ctx) {
     std::vector<Type*> paramTypes;
     
     if (ctx->typeList()) {
@@ -858,7 +858,7 @@ std::any ASTBuilder::visitFunctionType(NovaParser::FunctionTypeContext* ctx) {
     return static_cast<Type*>(typeContext_.getFunctionType(paramTypes, returnType));
 }
 
-std::any ASTBuilder::visitTupleType(NovaParser::TupleTypeContext* ctx) {
+antlrcpp::Any ASTBuilder::visitTupleType(NovaParser::TupleTypeContext* ctx) {
     std::vector<Type*> elementTypes;
     
     if (ctx->typeList()) {
@@ -870,7 +870,7 @@ std::any ASTBuilder::visitTupleType(NovaParser::TupleTypeContext* ctx) {
     return static_cast<Type*>(typeContext_.getTupleType(elementTypes));
 }
 
-std::any ASTBuilder::visitArrayType(NovaParser::ArrayTypeContext* ctx) {
+antlrcpp::Any ASTBuilder::visitArrayType(NovaParser::ArrayTypeContext* ctx) {
     Type* elementType = convertType(ctx->type_(0));
     
     // Determinar tamaño
@@ -884,7 +884,7 @@ std::any ASTBuilder::visitArrayType(NovaParser::ArrayTypeContext* ctx) {
     return static_cast<Type*>(typeContext_.getArrayType(elementType, size));
 }
 
-std::any ASTBuilder::visitReferenceType(NovaParser::ReferenceTypeContext* ctx) {
+antlrcpp::Any ASTBuilder::visitReferenceType(NovaParser::ReferenceTypeContext* ctx) {
     Type* referencedType = convertType(ctx->type_());
     Mutability mut = ctx->mut ? Mutability::Mutable : Mutability::Immutable;
     
@@ -895,7 +895,7 @@ std::any ASTBuilder::visitReferenceType(NovaParser::ReferenceTypeContext* ctx) {
 // VISIT - LITERALES
 // ============================================
 
-std::any ASTBuilder::visitIntegerLiteral(NovaParser::IntegerLiteralContext* ctx) {
+antlrcpp::Any ASTBuilder::visitIntegerLiteral(NovaParser::IntegerLiteralContext* ctx) {
     auto litNode = std::make_unique<IntegerLiteralNode>(createSourceLocation(ctx));
     
     std::string text = ctx->getText();
@@ -943,7 +943,7 @@ std::any ASTBuilder::visitIntegerLiteral(NovaParser::IntegerLiteralContext* ctx)
     return litNode;
 }
 
-std::any ASTBuilder::visitFloatLiteral(NovaParser::FloatLiteralContext* ctx) {
+antlrcpp::Any ASTBuilder::visitFloatLiteral(NovaParser::FloatLiteralContext* ctx) {
     auto litNode = std::make_unique<FloatLiteralNode>(createSourceLocation(ctx));
     
     std::string text = ctx->getText();
@@ -966,12 +966,12 @@ std::any ASTBuilder::visitFloatLiteral(NovaParser::FloatLiteralContext* ctx) {
     return litNode;
 }
 
-std::any ASTBuilder::visitBooleanLiteral(NovaParser::BooleanLiteralContext* ctx) {
+antlrcpp::Any ASTBuilder::visitBooleanLiteral(NovaParser::BooleanLiteralContext* ctx) {
     bool value = ctx->getText() == "true";
     return std::make_unique<BooleanLiteralNode>(value, createSourceLocation(ctx));
 }
 
-std::any ASTBuilder::visitCharacterLiteral(NovaParser::CharacterLiteralContext* ctx) {
+antlrcpp::Any ASTBuilder::visitCharacterLiteral(NovaParser::CharacterLiteralContext* ctx) {
     auto litNode = std::make_unique<CharLiteralNode>(createSourceLocation(ctx));
     
     std::string text = ctx->getText();
@@ -998,7 +998,7 @@ std::any ASTBuilder::visitCharacterLiteral(NovaParser::CharacterLiteralContext* 
     return litNode;
 }
 
-std::any ASTBuilder::visitStringLiteral(NovaParser::StringLiteralContext* ctx) {
+antlrcpp::Any ASTBuilder::visitStringLiteral(NovaParser::StringLiteralContext* ctx) {
     auto litNode = std::make_unique<StringLiteralNode>(createSourceLocation(ctx));
     
     std::string text = ctx->getText();
@@ -1015,7 +1015,7 @@ std::any ASTBuilder::visitStringLiteral(NovaParser::StringLiteralContext* ctx) {
 // VISIT - PATRONES
 // ============================================
 
-std::any ASTBuilder::visitPattern(NovaParser::PatternContext* ctx) {
+antlrcpp::Any ASTBuilder::visitPattern(NovaParser::PatternContext* ctx) {
     if (ctx->identifierPattern()) {
         return visit(ctx->identifierPattern());
     } else if (ctx->tuplePattern()) {
@@ -1025,10 +1025,10 @@ std::any ASTBuilder::visitPattern(NovaParser::PatternContext* ctx) {
     } else if (ctx->wildcardPattern()) {
         return visit(ctx->wildcardPattern());
     }
-    return std::any();
+    return antlrcpp::Any();
 }
 
-std::any ASTBuilder::visitIdentifierPattern(NovaParser::IdentifierPatternContext* ctx) {
+antlrcpp::Any ASTBuilder::visitIdentifierPattern(NovaParser::IdentifierPatternContext* ctx) {
     auto pattern = std::make_unique<IdentifierPatternNode>(createSourceLocation(ctx));
     
     bool isMutable = ctx->mut != nullptr;
@@ -1041,7 +1041,7 @@ std::any ASTBuilder::visitIdentifierPattern(NovaParser::IdentifierPatternContext
     return pattern;
 }
 
-std::any ASTBuilder::visitTuplePattern(NovaParser::TuplePatternContext* ctx) {
+antlrcpp::Any ASTBuilder::visitTuplePattern(NovaParser::TuplePatternContext* ctx) {
     auto pattern = std::make_unique<TuplePatternNode>(createSourceLocation(ctx));
     
     for (auto* patCtx : ctx->pattern()) {
@@ -1051,7 +1051,7 @@ std::any ASTBuilder::visitTuplePattern(NovaParser::TuplePatternContext* ctx) {
     return pattern;
 }
 
-std::any ASTBuilder::visitStructPattern(NovaParser::StructPatternContext* ctx) {
+antlrcpp::Any ASTBuilder::visitStructPattern(NovaParser::StructPatternContext* ctx) {
     auto pattern = std::make_unique<StructPatternNode>(createSourceLocation(ctx));
     
     if (ctx->identifier()) {
@@ -1061,7 +1061,7 @@ std::any ASTBuilder::visitStructPattern(NovaParser::StructPatternContext* ctx) {
     return pattern;
 }
 
-std::any ASTBuilder::visitWildcardPattern(NovaParser::WildcardPatternContext* ctx) {
+antlrcpp::Any ASTBuilder::visitWildcardPattern(NovaParser::WildcardPatternContext* ctx) {
     return std::make_unique<WildcardPatternNode>(createSourceLocation(ctx));
 }
 
@@ -1069,7 +1069,7 @@ std::any ASTBuilder::visitWildcardPattern(NovaParser::WildcardPatternContext* ct
 // VISIT - PARÁMETROS
 // ============================================
 
-std::any ASTBuilder::visitParameter(NovaParser::ParameterContext* ctx) {
+antlrcpp::Any ASTBuilder::visitParameter(NovaParser::ParameterContext* ctx) {
     auto paramNode = std::make_unique<FunctionParamNode>(createSourceLocation(ctx));
     
     if (ctx->identifier()) {
@@ -1088,12 +1088,12 @@ std::any ASTBuilder::visitParameter(NovaParser::ParameterContext* ctx) {
     return paramNode;
 }
 
-std::any ASTBuilder::visitFunctionParameters(NovaParser::FunctionParametersContext* ctx) {
+antlrcpp::Any ASTBuilder::visitFunctionParameters(NovaParser::FunctionParametersContext* ctx) {
     std::vector<std::unique_ptr<FunctionParamNode>> params;
     
     for (auto* paramCtx : ctx->parameterList()->parameter()) {
         auto result = visit(paramCtx);
-        if (result.has_value()) {
+        if (!result.isEmpty()) {
             // params.push_back(...);
         }
     }
@@ -1105,7 +1105,7 @@ std::any ASTBuilder::visitFunctionParameters(NovaParser::FunctionParametersConte
 // VISIT - MATCH ARMS
 // ============================================
 
-std::any ASTBuilder::visitMatchArm(NovaParser::MatchArmContext* ctx) {
+antlrcpp::Any ASTBuilder::visitMatchArm(NovaParser::MatchArmContext* ctx) {
     auto armNode = std::make_unique<MatchArmNode>(createSourceLocation(ctx));
     
     // Pattern
@@ -1144,12 +1144,12 @@ SourceLocation ASTBuilder::tokenToSourceLocation(antlr4::Token* token) {
     return SourceLocation(fileName, line, column);
 }
 
-Type* ASTBuilder::convertType(NovaParser::TypeContext* ctx) {
+Type* ASTBuilder::convertType(NovaParser::Type_Context* ctx) {
     if (!ctx) return typeContext_.getErrorType();
     
     auto result = visit(ctx);
-    if (result.has_value()) {
-        return std::any_cast<Type*>(result);
+    if (!result.isEmpty()) {
+        return antlrcpp::Any_cast<Type*>(result);
     }
     return typeContext_.getErrorType();
 }

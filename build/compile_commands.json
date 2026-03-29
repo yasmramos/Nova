@@ -1,0 +1,82 @@
+[
+{
+  "directory": "/workspace/build",
+  "command": "/usr/bin/c++ -DNOVA_LLVM_STUB=1 -I/workspace/src/ast -I/workspace/src/parser -I/workspace/src/sema -I/workspace/src/codegen -I/workspace/src/driver -I/workspace/src/utils -I/usr/include/antlr4-runtime -Wall -Wextra -Wpedantic -Werror=return-type -Werror=uninitialized -Werror=maybe-uninitialized -std=c++17 -o CMakeFiles/nova-lib.dir/src/ast/Node.cpp.o -c /workspace/src/ast/Node.cpp",
+  "file": "/workspace/src/ast/Node.cpp"
+},
+{
+  "directory": "/workspace/build",
+  "command": "/usr/bin/c++ -DNOVA_LLVM_STUB=1 -I/workspace/src/ast -I/workspace/src/parser -I/workspace/src/sema -I/workspace/src/codegen -I/workspace/src/driver -I/workspace/src/utils -I/usr/include/antlr4-runtime -Wall -Wextra -Wpedantic -Werror=return-type -Werror=uninitialized -Werror=maybe-uninitialized -std=c++17 -o CMakeFiles/nova-lib.dir/src/ast/Types.cpp.o -c /workspace/src/ast/Types.cpp",
+  "file": "/workspace/src/ast/Types.cpp"
+},
+{
+  "directory": "/workspace/build",
+  "command": "/usr/bin/c++ -DNOVA_LLVM_STUB=1 -I/workspace/src/ast -I/workspace/src/parser -I/workspace/src/sema -I/workspace/src/codegen -I/workspace/src/driver -I/workspace/src/utils -I/usr/include/antlr4-runtime -Wall -Wextra -Wpedantic -Werror=return-type -Werror=uninitialized -Werror=maybe-uninitialized -std=c++17 -o CMakeFiles/nova-lib.dir/src/sema/ASTBuilder.cpp.o -c /workspace/src/sema/ASTBuilder.cpp",
+  "file": "/workspace/src/sema/ASTBuilder.cpp"
+},
+{
+  "directory": "/workspace/build",
+  "command": "/usr/bin/c++ -DNOVA_LLVM_STUB=1 -I/workspace/src/ast -I/workspace/src/parser -I/workspace/src/sema -I/workspace/src/codegen -I/workspace/src/driver -I/workspace/src/utils -I/usr/include/antlr4-runtime -Wall -Wextra -Wpedantic -Werror=return-type -Werror=uninitialized -Werror=maybe-uninitialized -std=c++17 -o CMakeFiles/nova-lib.dir/src/sema/SymbolTable.cpp.o -c /workspace/src/sema/SymbolTable.cpp",
+  "file": "/workspace/src/sema/SymbolTable.cpp"
+},
+{
+  "directory": "/workspace/build",
+  "command": "/usr/bin/c++ -DNOVA_LLVM_STUB=1 -I/workspace/src/ast -I/workspace/src/parser -I/workspace/src/sema -I/workspace/src/codegen -I/workspace/src/driver -I/workspace/src/utils -I/usr/include/antlr4-runtime -Wall -Wextra -Wpedantic -Werror=return-type -Werror=uninitialized -Werror=maybe-uninitialized -std=c++17 -o CMakeFiles/nova-lib.dir/src/sema/TypeChecker.cpp.o -c /workspace/src/sema/TypeChecker.cpp",
+  "file": "/workspace/src/sema/TypeChecker.cpp"
+},
+{
+  "directory": "/workspace/build",
+  "command": "/usr/bin/c++ -DNOVA_LLVM_STUB=1 -I/workspace/src/ast -I/workspace/src/parser -I/workspace/src/sema -I/workspace/src/codegen -I/workspace/src/driver -I/workspace/src/utils -I/usr/include/antlr4-runtime -Wall -Wextra -Wpedantic -Werror=return-type -Werror=uninitialized -Werror=maybe-uninitialized -std=c++17 -o CMakeFiles/nova-lib.dir/src/codegen/CodeGenContext.cpp.o -c /workspace/src/codegen/CodeGenContext.cpp",
+  "file": "/workspace/src/codegen/CodeGenContext.cpp"
+},
+{
+  "directory": "/workspace/build",
+  "command": "/usr/bin/c++ -DNOVA_LLVM_STUB=1 -I/workspace/src/ast -I/workspace/src/parser -I/workspace/src/sema -I/workspace/src/codegen -I/workspace/src/driver -I/workspace/src/utils -I/usr/include/antlr4-runtime -Wall -Wextra -Wpedantic -Werror=return-type -Werror=uninitialized -Werror=maybe-uninitialized -std=c++17 -o CMakeFiles/nova-lib.dir/src/codegen/CodegenVisitor.cpp.o -c /workspace/src/codegen/CodegenVisitor.cpp",
+  "file": "/workspace/src/codegen/CodegenVisitor.cpp"
+},
+{
+  "directory": "/workspace/build",
+  "command": "/usr/bin/c++ -DNOVA_LLVM_STUB=1 -I/workspace/src/ast -I/workspace/src/parser -I/workspace/src/sema -I/workspace/src/codegen -I/workspace/src/driver -I/workspace/src/utils -I/usr/include/antlr4-runtime -Wall -Wextra -Wpedantic -Werror=return-type -Werror=uninitialized -Werror=maybe-uninitialized -std=c++17 -o CMakeFiles/nova-lib.dir/src/utils/SourceLocation.cpp.o -c /workspace/src/utils/SourceLocation.cpp",
+  "file": "/workspace/src/utils/SourceLocation.cpp"
+},
+{
+  "directory": "/workspace/build",
+  "command": "/usr/bin/c++ -DNOVA_LLVM_STUB=1 -I/workspace/src/ast -I/workspace/src/parser -I/workspace/src/sema -I/workspace/src/codegen -I/workspace/src/driver -I/workspace/src/utils -I/usr/include/antlr4-runtime -Wall -Wextra -Wpedantic -Werror=return-type -Werror=uninitialized -Werror=maybe-uninitialized -std=c++17 -o CMakeFiles/nova-lib.dir/src/utils/Error.cpp.o -c /workspace/src/utils/Error.cpp",
+  "file": "/workspace/src/utils/Error.cpp"
+},
+{
+  "directory": "/workspace/build",
+  "command": "/usr/bin/c++ -DNOVA_LLVM_STUB=1 -I/workspace/src/ast -I/workspace/src/parser -I/workspace/src/sema -I/workspace/src/codegen -I/workspace/src/driver -I/workspace/src/utils -I/usr/include/antlr4-runtime -Wall -Wextra -Wpedantic -Werror=return-type -Werror=uninitialized -Werror=maybe-uninitialized -std=c++17 -o CMakeFiles/nova-lib.dir/src/parser/NovaLexer.cpp.o -c /workspace/src/parser/NovaLexer.cpp",
+  "file": "/workspace/src/parser/NovaLexer.cpp"
+},
+{
+  "directory": "/workspace/build",
+  "command": "/usr/bin/c++ -DNOVA_LLVM_STUB=1 -I/workspace/src/ast -I/workspace/src/parser -I/workspace/src/sema -I/workspace/src/codegen -I/workspace/src/driver -I/workspace/src/utils -I/usr/include/antlr4-runtime -Wall -Wextra -Wpedantic -Werror=return-type -Werror=uninitialized -Werror=maybe-uninitialized -std=c++17 -o CMakeFiles/nova-lib.dir/src/parser/NovaParser.cpp.o -c /workspace/src/parser/NovaParser.cpp",
+  "file": "/workspace/src/parser/NovaParser.cpp"
+},
+{
+  "directory": "/workspace/build",
+  "command": "/usr/bin/c++ -DNOVA_LLVM_STUB=1 -I/workspace/src/ast -I/workspace/src/parser -I/workspace/src/sema -I/workspace/src/codegen -I/workspace/src/driver -I/workspace/src/utils -I/usr/include/antlr4-runtime -Wall -Wextra -Wpedantic -Werror=return-type -Werror=uninitialized -Werror=maybe-uninitialized -std=c++17 -o CMakeFiles/nova-lib.dir/src/parser/NovaBaseListener.cpp.o -c /workspace/src/parser/NovaBaseListener.cpp",
+  "file": "/workspace/src/parser/NovaBaseListener.cpp"
+},
+{
+  "directory": "/workspace/build",
+  "command": "/usr/bin/c++ -DNOVA_LLVM_STUB=1 -I/workspace/src/ast -I/workspace/src/parser -I/workspace/src/sema -I/workspace/src/codegen -I/workspace/src/driver -I/workspace/src/utils -I/usr/include/antlr4-runtime -Wall -Wextra -Wpedantic -Werror=return-type -Werror=uninitialized -Werror=maybe-uninitialized -std=c++17 -o CMakeFiles/nova-lib.dir/src/parser/NovaListener.cpp.o -c /workspace/src/parser/NovaListener.cpp",
+  "file": "/workspace/src/parser/NovaListener.cpp"
+},
+{
+  "directory": "/workspace/build",
+  "command": "/usr/bin/c++ -DNOVA_LLVM_STUB=1 -I/workspace/src/ast -I/workspace/src/parser -I/workspace/src/sema -I/workspace/src/codegen -I/workspace/src/driver -I/workspace/src/utils -I/usr/include/antlr4-runtime -Wall -Wextra -Wpedantic -Werror=return-type -Werror=uninitialized -Werror=maybe-uninitialized -std=c++17 -o CMakeFiles/nova-lib.dir/src/parser/NovaBaseVisitor.cpp.o -c /workspace/src/parser/NovaBaseVisitor.cpp",
+  "file": "/workspace/src/parser/NovaBaseVisitor.cpp"
+},
+{
+  "directory": "/workspace/build",
+  "command": "/usr/bin/c++ -DNOVA_LLVM_STUB=1 -I/workspace/src/ast -I/workspace/src/parser -I/workspace/src/sema -I/workspace/src/codegen -I/workspace/src/driver -I/workspace/src/utils -I/usr/include/antlr4-runtime -Wall -Wextra -Wpedantic -Werror=return-type -Werror=uninitialized -Werror=maybe-uninitialized -std=c++17 -o CMakeFiles/nova-lib.dir/src/parser/NovaVisitor.cpp.o -c /workspace/src/parser/NovaVisitor.cpp",
+  "file": "/workspace/src/parser/NovaVisitor.cpp"
+},
+{
+  "directory": "/workspace/build",
+  "command": "/usr/bin/c++ -DNOVA_LLVM_STUB=1 -I/workspace/src/ast -I/workspace/src/parser -I/workspace/src/sema -I/workspace/src/codegen -I/workspace/src/driver -I/workspace/src/utils -I/usr/include/antlr4-runtime -Wall -Wextra -Wpedantic -Werror=return-type -Werror=uninitialized -Werror=maybe-uninitialized -std=c++17 -o CMakeFiles/nova-compiler.dir/src/driver/main.cpp.o -c /workspace/src/driver/main.cpp",
+  "file": "/workspace/src/driver/main.cpp"
+}
+]

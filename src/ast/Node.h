@@ -15,7 +15,7 @@
 #include <memory>
 #include <optional>
 #include <iostream>
-#include "utils/SourceLocation.h"
+#include "../utils/SourceLocation.h"
 #include "Types.h"
 
 namespace nova {

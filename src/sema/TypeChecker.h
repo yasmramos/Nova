@@ -37,7 +37,7 @@ namespace nova {
  * Implementa el patrón Visitor sobre el AST para realizar
  * el análisis semántico completo del código fuente.
  */
-class TypeChecker : public NodeVisitor {
+class TypeChecker {
 public:
     /**
      * @brief Constructor
@@ -49,7 +49,7 @@ public:
     /**
      * @brief Destructor
      */
-    ~TypeChecker() override = default;
+    ~TypeChecker() = default;
     
     // === Métodos principales ===
     
@@ -77,44 +77,44 @@ public:
     
     // === NodeVisitor Interface ===
     
-    void visitModule(ModuleNode* node) override;
-    void visitFunctionDecl(FunctionDeclNode* node) override;
-    void visitStructDecl(StructType* node) override;
-    void visitEnumDecl(EnumType* node) override;
-    void visitTraitDecl(TraitDeclNode* node) override;
-    void visitImplDecl(ImplDeclNode* node) override;
-    void visitTypeAlias(TypeAliasNode* node) override;
-    void visitLetDecl(LetDeclNode* node) override;
-    void visitConstDecl(ConstDeclNode* node) override;
+    void visitModule(ModuleNode* node);
+    void visitFunctionDecl(FunctionDeclNode* node);
+    void visitStructDecl(StructType* node);
+    void visitEnumDecl(EnumType* node);
+    void visitTraitDecl(TraitDeclNode* node);
+    void visitImplDecl(ImplDeclNode* node);
+    void visitTypeAlias(TypeAliasNode* node);
+    void visitLetDecl(LetDeclNode* node);
+    void visitConstDecl(ConstDeclNode* node);
     
-    void visitBlock(BlockNode* node) override;
-    void visitExprStmt(ExprStmtNode* node) override;
-    void visitAssignStmt(AssignStmtNode* node) override;
-    void visitIfStmt(IfStmtNode* node) override;
-    void visitWhileStmt(WhileStmtNode* node) override;
-    void visitForStmt(ForStmtNode* node) override;
-    void visitLoopStmt(LoopStmtNode* node) override;
-    void visitMatchStmt(MatchStmtNode* node) override;
-    void visitReturnStmt(ReturnStmtNode* node) override;
-    void visitBreakStmt(BreakStmtNode* node) override;
-    void visitContinueStmt(ContinueStmtNode* node) override;
+    void visitBlock(BlockNode* node);
+    void visitExprStmt(ExprStmtNode* node);
+    void visitAssignStmt(AssignStmtNode* node);
+    void visitIfStmt(IfStmtNode* node);
+    void visitWhileStmt(WhileStmtNode* node);
+    void visitForStmt(ForStmtNode* node);
+    void visitLoopStmt(LoopStmtNode* node);
+    void visitMatchStmt(MatchStmtNode* node);
+    void visitReturnStmt(ReturnStmtNode* node);
+    void visitBreakStmt(BreakStmtNode* node);
+    void visitContinueStmt(ContinueStmtNode* node);
     
-    void visitBinaryExpr(BinaryExprNode* node) override;
-    void visitUnaryExpr(UnaryExprNode* node) override;
-    void visitCallExpr(CallExprNode* node) override;
-    void visitIfExpr(IfExprNode* node) override;
-    void visitMatchExpr(MatchExprNode* node) override;
-    void visitLambdaExpr(LambdaExprNode* node) override;
-    void visitLiteral(LiteralNode* node) override;
-    void visitIdentifier(IdentifierNode* node) override;
-    void visitFieldExpr(FieldExprNode* node) override;
-    void visitTupleIndexExpr(TupleIndexExprNode* node) override;
-    void visitArrayExpr(ArrayExprNode* node) override;
-    void visitTupleExpr(TupleExprNode* node) override;
-    void visitStructExpr(StructExprNode* node) override;
-    void visitRangeExpr(RangeExprNode* node) override;
-    void visitCastExpr(CastExprNode* node) override;
-    void visitAwaitExpr(AwaitExprNode* node) override;
+    void visitBinaryExpr(BinaryExprNode* node);
+    void visitUnaryExpr(UnaryExprNode* node);
+    void visitCallExpr(CallExprNode* node);
+    void visitIfExpr(IfExprNode* node);
+    void visitMatchExpr(MatchExprNode* node);
+    void visitLambdaExpr(LambdaExprNode* node);
+    void visitLiteral(LiteralNode* node);
+    void visitIdentifier(IdentifierNode* node);
+    void visitFieldExpr(FieldExprNode* node);
+    void visitTupleIndexExpr(TupleIndexExprNode* node);
+    void visitArrayExpr(ArrayExprNode* node);
+    void visitTupleExpr(TupleExprNode* node);
+    void visitStructExpr(StructExprNode* node);
+    void visitRangeExpr(RangeExprNode* node);
+    void visitCastExpr(CastExprNode* node);
+    void visitAwaitExpr(AwaitExprNode* node);
 
 protected:
     // === Utilidades de análisis ===

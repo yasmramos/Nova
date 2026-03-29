@@ -15,6 +15,7 @@
 #include <vector>
 #include <sstream>
 #include <optional>
+#include <antlr4-runtime.h>
 #include "SourceLocation.h"
 
 namespace nova {
@@ -343,6 +344,32 @@ private:
         // Podría ser configurable
         return true;
     }
+};
+
+/**
+ * @class NovaErrorListener
+ * @brief Listener de errores de ANTLR4 que reporta al ErrorHandler
+ * 
+ * Esta clase adapta la interfaz de ANTLRErrorListener para
+ * reportar errores sintácticos y léxicos al ErrorHandler.
+ */
+class NovaErrorListener : public antlr4::BaseErrorListener {
+public:
+    NovaErrorListener(ErrorHandler& handler) : errorHandler_(handler) {}
+    
+    void syntaxError(antlr4::Recognizer* recognizer,
+                     antlr4::Token* offendingSymbol,
+                     size_t line,
+                     size_t charPositionInLine,
+                     const std::string& msg,
+                     std::exception_ptr e) override {
+        SourceLocation loc("<input>", line, static_cast<size_t>(charPositionInLine));
+        
+        errorHandler_.reportError(ErrorCode::ParserUnexpectedToken, loc, msg);
+    }
+    
+private:
+    ErrorHandler& errorHandler_;
 };
 
 /**
