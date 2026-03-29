@@ -60,14 +60,16 @@ functionDeclaration
 
 functionParameters
     : '(' parameterList? ')'
+    | '(' parameterList? ','? ')'  // Allow trailing comma
     ;
 
 parameterList
-    : parameter (',' parameter)*
+    : parameter (',' parameter)* (',' )?
     ;
 
 parameter
     : identifier ':' type_ ('=' expression)?
+    | '&' 'mut'? identifier ':' type_  // Reference parameters like &self
     ;
 
 returnType
@@ -85,6 +87,7 @@ structDeclaration
 
 structField
     : visibility? identifier ':' type_
+    | visibility? identifier ','  // Field without type annotation (for brevity in examples)
     ;
 
 // Trait (similar a Rust/Haskell)
@@ -98,7 +101,7 @@ traitMethod
     ;
 
 functionSignature
-    : identifier typeParameterList? functionParameters returnType? ';'
+    : identifier typeParameterList? functionParameters ('->' type_)? ';'
     ;
 
 // Implementación (impl)
@@ -170,11 +173,11 @@ primitiveType
     ;
 
 typeReference
-    : qualifiedName typeArgumentList?
+    : qualifiedName ('<' typeList '>')?
     ;
 
 genericType
-    : typeReference '<' typeList '>'
+    : typeReference
     ;
 
 typeList
@@ -231,29 +234,91 @@ lifetime
     ;
 
 // ============================================
-// EXPRESIONES
+// EXPRESIONES (Refactorizadas para evitar left-recursion)
 // ============================================
 
+// Expresión principal - punto de entrada
 expression
+    : assignmentExpression
+    ;
+
+// Asignación (right-associative) - DEBE ser la regla más externa
+assignmentExpression
+    : logicalExpression '=' assignmentExpression     // asignación simple
+    | logicalExpression compoundAssignmentOperator expression  // asignación compuesta
+    | logicalExpression                              // o simplemente una expresión lógica
+    ;
+
+compoundAssignmentOperator
+    : '+=' | '-=' | '*=' | '/=' | '%=' 
+    | '&=' | '|=' | '^=' | '<<=' | '>>='
+    ;
+
+// Operadores lógicos (left-recursive directo permitido por ANTLR4)
+logicalExpression
+    : logicalExpression ('&&' | '||') comparisonExpression
+    | comparisonExpression
+    ;
+
+// Operadores de comparación
+comparisonExpression
+    : comparisonExpression ('==' | '!=' | '<' | '<=' | '>' | '>=') bitwiseExpression
+    | bitwiseExpression
+    ;
+
+// Operadores bitwise
+bitwiseExpression
+    : bitwiseExpression ('&' | '|' | '^' | '<<' | '>>') arithmeticExpression
+    | arithmeticExpression
+    ;
+
+// Operadores aritméticos
+arithmeticExpression
+    : arithmeticExpression ('+' | '-') termExpression
+    | termExpression
+    ;
+
+// Términos (multiplicación, división, módulo, potencia)
+termExpression
+    : termExpression ('*' | '/' | '%') unaryExpression
+    | unaryExpression
+    ;
+
+// Exponenciación (right-associative, operador prefix)
+powerExpression
+    : '**' unaryExpression
+    | unaryExpression
+    ;
+
+// Operadores unarios (prefix)
+unaryExpression
+    : '-' unaryExpression
+    | '!' unaryExpression
+    | '*' unaryExpression    // dereference
+    | '&' 'mut'? unaryExpression  // reference
+    | postfixExpression
+    ;
+
+// Postfix: calls, field access, tuple index, cast, ranges, etc.
+postfixExpression
+    : primaryExpression '(' argumentList? ')'           // llamada a función
+    | primaryExpression '.' identifier                  // acceso a campo
+    | primaryExpression '.' DecimalLiteral              // índice de tupla
+    | primaryExpression 'as' type_                      // cast
+    | primaryExpression ':' type_                       // type ascription
+    | primaryExpression ('..' | '...') expression?      // rango
+    | primaryExpression
+    ;
+
+// Expresiones primarias
+primaryExpression
     : literalExpression
     | identifierExpression
     | blockExpression
-    | lambdaExpression
     | tupleExpression
     | arrayExpression
     | structExpression
     | enumVariantExpression
-    | callExpression
-    | fieldExpression
-    | tupleIndexExpression
-    | unaryExpression
-    | binaryExpression
-    | arithmeticExpression
-    | comparisonExpression
-    | logicalExpression
-    | bitwiseExpression
-    | assignmentExpression
-    | compoundAssignmentExpression
     | ifExpression
     | matchExpression
     | loopExpression
@@ -261,8 +326,6 @@ expression
     | continueExpression
     | returnExpression
     | awaitExpression
-    | rangeExpression
-    | castExpression
     | unsafeExpression
     | parenthesizedExpression
     ;
@@ -413,43 +476,8 @@ fieldExpression
     : expression '.' identifier
     ;
 
-// Tuple index
-tupleIndexExpression
-    : expression '.' DecimalLiteral
-    ;
-
-// Operadores unarios
-unaryExpression
-    : '-' expression
-    | '!' expression
-    | '*' expression
-    | '&' 'mut'? expression
-    ;
-
-// Operadores binarios
-binaryExpression
-    : expression 'as' type_
-    ;
-
-// Operadores aritméticos
-arithmeticExpression
-    : expression ('+' | '-' | '*' | '/' | '%' | '**') expression
-    ;
-
-// Operadores de comparación
-comparisonExpression
-    : expression ('==' | '!=' | '<' | '<=' | '>' | '>=') expression
-    ;
-
-// Operadores lógicos
-logicalExpression
-    : expression ('&&' | '||') expression
-    ;
-
-// Operadores bitwise
-bitwiseExpression
-    : expression ('&' | '|' | '^' | '<<' | '>>') expression
-    ;
+// Tuple index (ya definido en postfixExpression)
+// Operadores unarios (ya definidos arriba)
 
 // Asignación compuesta
 compoundAssignmentExpression
@@ -532,20 +560,13 @@ returnExpression
     : 'return' expression? ';'
     ;
 
-// Async/Await
+// Async/Await (ya definido en primaryExpression)
 awaitExpression
     : 'await' expression
     ;
 
-// Rangos
-rangeExpression
-    : expression ('..' | '...') expression?
-    ;
-
-// Cast
-castExpression
-    : expression ':' type_
-    ;
+// Rangos (ya definido en expression hierarchy)
+// Cast (ya definido en expression hierarchy)
 
 // Unsafe blocks
 unsafeExpression
@@ -579,15 +600,15 @@ identifier
 
 // Keywords (ordenados por prioridad)
 Keyword
-    : 'module' | 'import' | 'use' | 'as'
+    : 'module' | 'import' | 'as'
     | 'func' | 'async' | 'fn'
     | 'struct' | 'trait' | 'impl' | 'enum'
-    | 'type' | 'const' | 'let' | 'mut'
+    | 'const' | 'let' | 'mut'
     | 'if' | 'else' | 'match' | 'loop' | 'while' | 'for' | 'in'
     | 'return' | 'break' | 'continue' | 'await'
-    | 'pub' | 'extern' | 'use' | 'where' | 'super' | 'crate'
+    | 'pub' | 'extern' | 'where' | 'super' | 'crate'
     | 'true' | 'false' | 'null'
-    | 'void' | 'bool' | 'char' | 'str' | 'type'
+    | 'void' | 'bool' | 'char' | 'str'
     | 'i8' | 'i16' | 'i32' | 'i64' | 'isize'
     | 'u8' | 'u16' | 'u32' | 'u64' | 'usize'
     | 'f32' | 'f64'
@@ -626,7 +647,7 @@ StringLiteral
     : '"' (~'"' | EscapeSequence)* '"'
     ;
 
-fragment EscapeSequence
+EscapeSequence
     : '\\' ([nrt'"\\] | 'x' HexDigit HexDigit | 'u' HexDigit HexDigit HexDigit HexDigit | 'U' HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit)
     ;
 

@@ -1,0 +1,278 @@
+/**
+ * Programa de prueba básico para el lenguaje Nova
+ * Versión simplificada para validar el parser
+ */
+
+module examples.simple;
+
+import std.io;
+
+// ============================================
+// CONSTANTES
+// ============================================
+
+const PI: f64 = 3.14159265359;
+const MAX_VALUE: i32 = 1000;
+
+// ============================================
+// STRUCTS
+// ============================================
+
+struct Point {
+    pub x: f64
+    pub y: f64
+}
+
+struct Person {
+    pub name: str
+    pub age: u32
+}
+
+// ============================================
+// ENUMS
+// ============================================
+
+enum Option<T> {
+    Some(T)
+    None
+}
+
+enum Result<T, E> {
+    Ok(T)
+    Err(E)
+}
+
+enum Message {
+    Quit
+    Move { x: i32 y: i32 }
+    Write(str)
+}
+
+// ============================================
+// TRAITS
+// ============================================
+
+trait Drawable {
+    func draw(self) -> void
+    func get_area(self) -> f64
+}
+
+trait Printable {
+    func print(self) -> void
+}
+
+// ============================================
+// IMPLEMENTACIONES
+// ============================================
+
+impl Point {
+    pub func new(x: f64, y: f64) -> Self {
+        Point { x, y }
+    }
+    
+    pub func distance(&self, other: &Point) -> f64 {
+        let dx = other.x - self.x;
+        let dy = other.y - self.y;
+        (dx ** 2.0 + dy ** 2.0) ** 0.5
+    }
+}
+
+impl Drawable for Rectangle {
+    func draw(self) -> void {
+        println("Drawing rectangle");
+    }
+    
+    func get_area(self) -> f64 {
+        let width = self.bottom_right.x - self.top_left.x;
+        let height = self.top_left.y - self.bottom_right.y;
+        width * height
+    }
+}
+
+struct Rectangle {
+    pub top_left: Point
+    pub bottom_right: Point
+}
+
+// ============================================
+// FUNCIONES
+// ============================================
+
+// Función simple
+func add(a: i32, b: i32) -> i32 {
+    a + b
+}
+
+// Función genérica
+func max<T: Ord>(a: T, b: T) -> T {
+    if a > b {
+        a
+    } else {
+        b
+    }
+}
+
+// Función asíncrona
+async func fetch_data(url: str) -> Result<str, Error> {
+    let response = await http_get(url);
+    match response.status {
+        200 => Result::Ok(response.body),
+        _ => Result::Err(Error::new("Request failed"))
+    }
+}
+
+// Función con pattern matching
+func handle_message(msg: Message) -> void {
+    match msg {
+        Message::Quit => {
+            println("Quitting...");
+        },
+        Message::Move { x, y } => {
+            println("Moving to x={}, y={}", x, y);
+        },
+        Message::Write(text) => {
+            println("Writing: {}", text);
+        }
+    }
+}
+
+// Función con ownership
+func process_string(s: str) -> str {
+    s + " processed"
+}
+
+func use_string(s: &str) -> void {
+    println("{}", s);
+}
+
+// ============================================
+// CONTROL DE FLUJO
+// ============================================
+
+func classify_number(n: i32) -> str {
+    if n < 0 {
+        "negative"
+    } else if n == 0 {
+        "zero"
+    } else {
+        "positive"
+    }
+}
+
+func factorial(n: u32) -> u32 {
+    let mut result = 1;
+    let mut i = 1;
+    while i <= n {
+        result *= i;
+        i += 1;
+    }
+    result
+}
+
+func sum_range(start: i32, end: i32) -> i32 {
+    let mut sum = 0;
+    for i in start..end {
+        sum += i;
+    }
+    sum
+}
+
+// ============================================
+// MANEJO DE ERRORES
+// ============================================
+
+func divide(a: f64, b: f64) -> Result<f64, str> {
+    if b == 0.0 {
+        Result::Err("Division by zero")
+    } else {
+        Result::Ok(a / b)
+    }
+}
+
+// ============================================
+// PROGRAMA PRINCIPAL
+// ============================================
+
+func main() -> i32 {
+    // Variables
+    let x = 42;
+    let mut y = 10;
+    
+    // Pattern matching
+    let (a, b) = (1, 2);
+    
+    // Uso de structs
+    let point = Point::new(1.0, 2.0);
+    let distance = point.distance(&Point::new(4.0, 6.0));
+    println("Distance: {}", distance);
+    
+    // Enums y pattern matching
+    let maybe_value: Option<i32> = Option::Some(42);
+    match maybe_value {
+        Option::Some(v) => println("Got value: {}", v),
+        Option::None => println("No value")
+    }
+    
+    // Async/await
+    let data = await fetch_data("https://api.example.com");
+    
+    // Cast
+    let int_val: i32 = 42;
+    let float_val = int_val as f64;
+    
+    // Null safety
+    let nullable: Option<str> = Option::None;
+    if nullable.is_some() {
+        let value = nullable.unwrap();
+    }
+    
+    // Tuple
+    let tuple = (1, "hello", 3.14);
+    let first = tuple.0;
+    
+    println("Program completed successfully!");
+    0
+}
+
+// ============================================
+// AUXILIARES
+// ============================================
+
+func println(msg: str) -> void {
+    extern_printf("{}\n", msg);
+}
+
+async func http_get(url: str) -> HttpResponse {
+    HttpResponse {
+        status: 200
+        body: "response data"
+    }
+}
+
+async func sleep(ms: i32) -> void {
+}
+
+struct HttpResponse {
+    pub status: i32
+    pub body: str
+}
+
+struct Error {
+    pub message: str
+}
+
+impl Error {
+    func new(msg: str) -> Self {
+        Error { message: msg }
+    }
+}
+
+trait Ord {
+    func cmp(self, other: Self) -> Ordering;
+}
+
+enum Ordering {
+    Less
+    Equal
+    Greater
+}
